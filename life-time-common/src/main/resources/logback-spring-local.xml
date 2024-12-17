@@ -1,0 +1,99 @@
+<configuration scan="true" scanPeriod="10 seconds">
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+
+    <!--
+       contextName说明：
+       每个logger都关联到logger上下文，默认上下文名称为“default”。但可以使用设置成其他名字，
+       用于区分不同应用程序的记录。一旦设置，不能修改,可以通过%contextName来打印日志上下文名称。
+     -->
+    <contextName>logback-spring-local</contextName>
+    <!-- name的值是变量的名称，value的值时变量定义的值。通过定义的值会被插入到logger上下文中。定义后，可以使“${}”来使用变量。 -->
+    <property name="logging.path" value="./app/log/${applicationName}"/>
+
+    <!--0. 日志格式和颜色渲染 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr"
+                    converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- 彩色日志格式 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint}  %clr(${PID:- }){magenta}  %clr(${LOG_LEVEL_PATTERN:-%5p})  %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <!--1. 输出到控制台-->
+    <appender name="CONSOLE_FILE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>trace</level>
+        </filter>
+
+        <!--日志文档输出格式-->
+        <encoder>
+            <!--指定日志格式-->
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <!--设置字符集-->
+            <charset>GBK</charset>
+        </encoder>
+    </appender>
+
+    <!--输出到文档-->
+    <!-- 时间滚动输出 level为 DEBUG 日志 -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名~~~~~file设置打印的文件的路径及文件名，建议绝对路径-->
+        <!--
+                <file>${logging.path}/file-system%d{yyyyMMddHH}_%i.log</file>
+        -->
+        <!--日志文档输出格式-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志归档 -->
+            <!--
+                归档的日志文件的路径，例如今天是2018-08-23日志，当前写的日志文件路径为file节点指定，
+                可以将此文件与file指定文件路径设置为不同路径，从而将当前日志文件或归档日志文件置不同的目录。
+                而2018-08-23的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引
+             -->
+            <fileNamePattern>${logging.path}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--
+               配置日志文件不能超过100M，若超过100M，日志文件会以索引0开始，命名日志文件
+               例如error.20180823.0.txt
+               -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--日志文档保留天数-->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <!--指定日志格式-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]  %-5level %logger{50} - %msg%n</pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF8</charset>
+        </encoder>
+    </appender>
+    <!--输出到文档-->
+    <!-- 时间滚动输出 level为 DEBUG 日志 -->
+    <appender name="MAPPER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名~~~~~file设置打印的文件的路径及文件名，建议绝对路径-->
+        <file>${logging.path}/${applicationName}.log</file>
+        <!--日志文档输出格式-->
+        <encoder>
+            <!--指定日志格式-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}  [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- 设置字符集 -->
+            <charset>GBK</charset>
+        </encoder>
+    </appender>
+    <logger name="com.sh3h.flow.dao" level="trace"/>
+    <root level="info">
+        <appender-ref ref="DEBUG_FILE"/>
+        <appender-ref ref="CONSOLE_FILE"/>
+        <appender-ref ref="MAPPER_FILE"/>
+        <!--
+          <appender-ref ref="INFO_FILE"/>
+         <appender-ref ref="WARN_FILE"/>
+         <appender-ref ref="ERROR_FILE"/>-->
+     </root>
+</configuration>

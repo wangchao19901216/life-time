@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+  mvc:
+    async:
+      request-timeout: 120000
+  application:
+    admin:
+      enabled:
+eureka:
+  dashboard:
+    enabled: false
+
+

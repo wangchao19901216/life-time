@@ -1,0 +1,73 @@
+server:
+  port: 8086
+logging:
+  level:
+    root: warn
+    com.lifetime.common: trace
+  config: classpath:logback-spring-local.xml
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    username: root
+    password: Wc8528932@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rm-bp1r77bjc1th457gj8o.mysql.rds.aliyuncs.com:3306/lifetime?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+  application:
+    name: life-time-manager-service  #服务名称,Eureka 页面显示
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  redis:
+    host: 8.155.10.223
+    port: 6379
+    # 连接超时时间
+    timeout: 10000ms
+    # Redis默认情况下有16个分片，这里配置具体使用的分片
+    database: 0
+    lettuce:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制） 默认 8
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+        max-wait: -1ms
+        # 连接池中的最大空闲连接 默认 8
+        max-idle: 8
+        # 连接池中的最小空闲连接 默认 0
+        min-idle: 0
+    password: Wc8528932@123
+    cache:
+      # 一般来说是不用配置的，Spring Cache 会根据依赖的包自行装配
+      type: redis
+lifetime:
+  redis: true
+  auth:
+    resourceId: hotline-manager #服务ID
+    clientId: sh3h_client
+    clientSecret: 123456
+    tokenUrl: http://47.97.163.17:8080/auth/oauth/token
+    checkUrl: http://47.97.163.17:8080/auth/oauth/check_token
+swagger:
+  # 当enabled为false的时候，则可禁用swagger。
+  enabled: true
+  # 当isAuthorization为false的时候，则可不验证
+  isAuthorization: true
+  # 工程的基础包名。
+  basePackage: com.lifetime.manager
+  # 工程服务的基础包名。
+  serviceBasePackage: com.lifetime.manager
+  title: 系统管理
+  description: 系统管理
+  version: 1.0
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${eureka.instance.ip-address}:${server.port}
+    secure-port-enabled: false
+    lease-renewal-interval-in-seconds: 60
+    lease-expiration-duration-in-seconds: 60
+    ip-address: 47.97.163.17
+  client:
+    service-url:
+      defaultZone: http://172.16.46.87:8001/eureka
+    enabled: false

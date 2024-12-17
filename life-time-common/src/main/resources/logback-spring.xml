@@ -1,0 +1,25 @@
+<configuration>
+
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+<!--    <contextName>logback-spring</contextName>-->
+    <!-- 日志格式 -->
+<!--    <property name="FILE_PATTERN"-->
+<!--              value="${FILE_PATTERN:- %d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p}  [%X{RequestId}]  ${PID:- }   "/>-->
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./app/log/${applicationName}/%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{requestId} ${PID:- }] [%thread] %-5level %logger{50} -
+                %msg%n</pattern>
+<!--            -->
+            <charset class="java.nio.charset.Charset">utf8</charset>
+        </encoder>
+    </appender>
+
+    <root level="error">
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

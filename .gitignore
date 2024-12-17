@@ -1,0 +1,12 @@
+target
+.idea
+*.iml
+/.idea
+*-local.yml
+/.metadata/
+.classpath
+.project
+.settings
+.metadata
+*.log
+
