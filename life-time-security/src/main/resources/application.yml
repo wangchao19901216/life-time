@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8002
   servlet:
     context-path: /auth
 logging:
@@ -21,7 +21,7 @@ spring:
   jpa:
     show-sql: true
   application:
-    name: lifetime-security-service  #服务名称,Eureka 页面显示
+    name: lifetime-security-server  #服务名称,Eureka 页面显示
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -65,10 +65,10 @@ eureka:
     secure-port-enabled: false
     lease-renewal-interval-in-seconds: 60
     lease-expiration-duration-in-seconds: 60
-    ip-address: 47.97.163.17
+    ip-address: 8.155.10.223
   client:
     service-url:
-      defaultZone: http://172.16.46.87:8001/eureka
-    enabled: false
+      defaultZone: http://8.155.10.223:8001/eureka
+    enabled: true
 
 

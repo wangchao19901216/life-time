@@ -1,0 +1,47 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: life-time-gateway-server
+  # 开启 Gateway 服务注册中心服务发现
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            # 允许携带认证信息
+            # 允许跨域的源(网站域名/ip)，设置*为全部
+            # 允许跨域请求里的head字段，设置*为全部
+            # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
+            # 跨域允许的有效期
+            allow-credentials: true
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allowed-methods: "*"
+            max-age: 3600
+      discovery:
+        locator:
+          enabled: true
+      httpclient:
+        connect-timeout: 5000
+        pool:
+          type: disabled
+        ssl:
+          use-insecure-trust-manager: true
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${eureka.instance.ip-address}:${server.port}
+    prefer-ip-address: true
+    ip-address: 8.155.10.223
+  client:
+    service-url:
+      defaultZone:  http://8.155.10.223:8001/eureka
+

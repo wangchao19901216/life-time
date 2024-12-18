@@ -1,18 +1,18 @@
 server:
-  port: 8080
+  port: 8001
 spring:
   application:
     name: life-time-eureka-server
 eureka:
   instance:
-    hostname: localhost
-    lease-renewal-interval-in-seconds: 30
-    lease-expiration-duration-in-seconds: 90
+    instance-id: ${spring.application.name}:${eureka.instance.ip-address}:${server.port}
+    prefer-ip-address: true
+    ip-address: 8.155.10.223
   client:
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://127.0.0.1:${server.port}/eureka/
+      defaultZone: http://${eureka.instance.ip-address}:${server.port}/eureka
   server:
     wait-time-in-ms-when-sync-empty: 5
     enable-self-preservation: true

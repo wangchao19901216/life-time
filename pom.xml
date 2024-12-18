@@ -14,6 +14,7 @@
       <module>life-time-security</module>
       <module>life-time-common-redis</module>
     <module>life-time-common-eureka</module>
+    <module>life-time-common-gateway</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>
