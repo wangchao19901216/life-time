@@ -13,6 +13,7 @@
       <module>life-time-manager</module>
       <module>life-time-security</module>
       <module>life-time-common-redis</module>
+    <module>life-time-common-eureka</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>

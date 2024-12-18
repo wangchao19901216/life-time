@@ -1,0 +1,20 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: life-time-eureka-server
+eureka:
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://127.0.0.1:${server.port}/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 5
+    enable-self-preservation: true
+    eviction-interval-timer-in-ms: 10000
+    renewal-percent-threshold: 0.85

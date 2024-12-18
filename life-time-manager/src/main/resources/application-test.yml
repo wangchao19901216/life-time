@@ -14,7 +14,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://rm-bp1r77bjc1th457gj8o.mysql.rds.aliyuncs.com:3306/lifetime?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
   application:
-    name: life-time-manager-service  #服务名称,Eureka 页面显示
+    name: life-time-manager-server  #服务名称,Eureka 页面显示
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -69,5 +69,5 @@ eureka:
     ip-address: 47.97.163.17
   client:
     service-url:
-      defaultZone: http://172.16.46.87:8001/eureka
+      defaultZone: http://127.0.0.1:8080/eureka
     enabled: false
