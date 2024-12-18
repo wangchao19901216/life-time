@@ -16,8 +16,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * @author:wangchao
- * @date: 2023/5/7-22:30
- * @description: com.sh3h.common.config
+ * @date: 2024/14:23-22:30
+ * @description: com.lift.common.config
  * @Version:1.0
  */
 @Configuration
@@ -58,22 +58,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/doc.html")
                 .permitAll()
-
-//        http.sessionManagement()
-//                .maximumSessions(1) //新的登录踢掉旧的登录  .maxSessionsPreventsLogin(true);此时一个浏览器登录成功后，另外一个浏览器就登录不了了
-//                .expiredSessionStrategy(customSessionInformationExpiredStrategy)
-//                .and()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // SpringSecurity不会使用也不会创建HttpSession实例
-//                .and()
-//                .authorizeRequests().
-//                antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/doc.html").permitAll();
-        //.permitAll()
-        // 授权规则配置
-//                .antMatchers("/product/*").hasAuthority("product")
-        // 所有请求，都需要有all范围（scope）
-//                .antMatchers("/**").access("#oauth2.hasScope('all')")
-        // 等价于上面
-//                .anyRequest().access("#oauth2.hasScope('all')")
         ;
     }
 

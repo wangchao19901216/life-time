@@ -1,5 +1,6 @@
 package com.lifetime.common.manager.service;
 
+import com.lifetime.common.manager.entity.UserDetailEntity;
 import com.lifetime.common.manager.entity.UserEntity;
 import com.lifetime.common.service.BaseService;
 
@@ -9,9 +10,9 @@ import com.lifetime.common.service.BaseService;
  * @description: com.lifetime.manager.service
  * @Version:1.0
  */
-public interface IUserService extends BaseService<UserEntity> {
-    UserEntity findByUserCode(String userCode);
-    UserEntity findByMobile(String mobile);
-    Integer updatePassword(String userCode, String pw);
+public interface IUserDetailService extends BaseService<UserDetailEntity> {
+
+    UserDetailEntity findByUserCode(String userCode);
+    UserDetailEntity findByMobile(String mobile);
     Integer updateStatus(String userCode, Integer status);
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8086
+  port: 8003
 logging:
   level:
     root: warn
@@ -14,10 +14,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://rm-bp1r77bjc1th457gj8o.mysql.rds.aliyuncs.com:3306/lifetime?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
   application:
-    name: life-time-manager-server  #服务名称,Eureka 页面显示
+    name: lifetime-manager-server  #服务名称,Eureka 页面显示
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
+  jpa:
+    show-sql: true
   redis:
     host: 8.155.10.223
     port: 6379
@@ -42,11 +44,11 @@ spring:
 lifetime:
   redis: true
   auth:
-    resourceId: hotline-manager #服务ID
+    resourceId: lifetime-manager #服务ID
     clientId: sh3h_client
     clientSecret: 123456
-    tokenUrl: http://47.97.163.17:8080/auth/oauth/token
-    checkUrl: http://47.97.163.17:8080/auth/oauth/check_token
+    tokenUrl: http://8.155.10.223/lifetime-api/lifetime-security-server/auth/oauth/token
+    checkUrl: http://8.155.10.223/lifetime-api/lifetime-security-server/auth/oauth/check_token
 swagger:
   # 当enabled为false的时候，则可禁用swagger。
   enabled: true
@@ -66,7 +68,7 @@ eureka:
     secure-port-enabled: false
     lease-renewal-interval-in-seconds: 60
     lease-expiration-duration-in-seconds: 60
-    ip-address: 47.97.163.17
+    ip-address: 127.0.0.1
   client:
     service-url:
       defaultZone: http://127.0.0.1:8080/eureka

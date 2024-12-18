@@ -4,6 +4,7 @@ package com.lifetime.security.sms;
 import com.lifetime.common.enums.CommonExceptionEnum;
 import com.lifetime.common.manager.entity.UserEntity;
 import com.lifetime.common.manager.service.IUserService;
+import com.lifetime.common.redis.constant.RedisConstants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -23,7 +24,6 @@ public class SmsCodeTokenGranter extends AbstractTokenGranter {
 
     private IUserService userService;
 
-    private static final String PHONENUM_KEY = "PHONENUM_KEY:";
     private static final String SMS_GRANT_TYPE = "sms_code";
     private final AuthenticationManager authenticationManager;
 
@@ -67,7 +67,7 @@ public class SmsCodeTokenGranter extends AbstractTokenGranter {
         if (StringUtils.isBlank(phoneNumber)||StringUtils.isBlank(smsCode)) {
             throw new RuntimeException(String.valueOf(CommonExceptionEnum.DATA_NOT_EXIST));
         }
-        String fwqCode = redisTemplate.opsForValue().get(PHONENUM_KEY + phoneNumber)+"";
+        String fwqCode = redisTemplate.opsForValue().get(RedisConstants.MOBILE_LOGIN + phoneNumber)+"";
 
         if (StringUtils.isBlank(fwqCode)||!smsCode.equals(fwqCode)) {
             throw new RuntimeException(String.valueOf(CommonExceptionEnum.DATA_NOT_EXIST));

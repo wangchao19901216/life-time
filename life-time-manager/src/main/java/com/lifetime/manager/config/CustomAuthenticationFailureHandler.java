@@ -14,8 +14,8 @@ import java.util.Map;
 
 /**
  * @author:wangchao
- * @date: 2023/6/23-11:43
- * @description: com.sh3h.manager.config
+ * @date: 2024/12/18-11:43
+ * @description: com.lifetime.manager.config
  * @Version:1.0
  */
 @Component("customAuthenticationFailureHandler")

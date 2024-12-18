@@ -8,12 +8,15 @@ import com.lifetime.common.enums.PrivacyTypeEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 @TableName("LT_USER_DETAIL")
 public class UserDetailEntity extends BaseEntity  {
 
     @ApiModelProperty(name = "用户编码",notes = "")
     @TableField("USER_CODE")
+    @NotEmpty(message = "用户编码不能为空")
     public String userCode ;
 
     @ApiModelProperty(name = "用户名称",notes = "")
@@ -23,6 +26,9 @@ public class UserDetailEntity extends BaseEntity  {
     @ApiModelProperty(name = "用户昵称",notes = "")
     @TableField("USER_NICK_NAME")
     public String userNickName ;
+
+    @ApiModelProperty(name = "手机号",notes = "")
+    public String mobile ;
 
     @ApiModelProperty(name = "头像",notes = "")
     @TableField("AVATAR")

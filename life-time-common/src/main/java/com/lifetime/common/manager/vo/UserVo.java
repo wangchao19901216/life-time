@@ -12,6 +12,6 @@ import lombok.Data;
  */
 @Data
 public class UserVo {
-     UserEntity user;
+     String token;
      UserDetailEntity userDetail;
 }

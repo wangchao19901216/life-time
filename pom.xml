@@ -47,6 +47,7 @@
     <hutool.version>5.8.11</hutool.version>
     <com.google.guava.version>20.0</com.google.guava.version>
     <lombok.version>1.18.22</lombok.version>
+    <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
     <!--数据库工具版本-->
     <mybatisplus.version>3.5.3.1</mybatisplus.version>
     <dm.version>18.0.0</dm.version>
@@ -55,6 +56,11 @@
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>

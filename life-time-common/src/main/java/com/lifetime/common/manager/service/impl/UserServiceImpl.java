@@ -2,6 +2,8 @@ package com.lifetime.common.manager.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lifetime.common.manager.dao.UserDetailMapper;
+import com.lifetime.common.manager.entity.UserDetailEntity;
 import com.lifetime.common.manager.entity.UserEntity;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.response.SearchResponse;
@@ -53,5 +55,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             return userEntity;
         }
         return null;
+    }
+
+    @Override
+    public Integer updatePassword(String userCode, String pw) {
+        return userMapper.updatePassword(userCode,pw);
+    }
+
+    @Override
+    public Integer updateStatus(String userCode, Integer status) {
+        return userMapper.updateStatus(userCode,status);
     }
 }
