@@ -14,5 +14,6 @@ import java.io.Serializable;
  */
 @Data
 public class UserRequestModel extends UserDetailEntity implements  Serializable{
+    @NotEmpty(message = "密码不能为空")
     private String passWord;
 }

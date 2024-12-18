@@ -30,6 +30,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigInteger;
 import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
@@ -136,16 +137,34 @@ public class UserBusiness {
 
 
 
-    @Transactional()
+    @Transactional
     public ResponseResult add(UserRequestModel userRequestModel){
-        UserDetailEntity userDetail= LtModelUtil.copyTo(userRequestModel,UserDetailEntity.class);
-        UserEntity userEntity=new UserEntity();
-        userEntity.setUsername(userRequestModel.getUserCode());
-        userEntity.setRemark(userRequestModel.getPassWord());
-        userEntity.setPassword(passwordEncoder.encode(userRequestModel.getPassWord()));
-        userEntity.setMobile(userRequestModel.getMobile());
-        iUserService.save(userEntity);
-        iUserDetailService.save(userDetail);
+        UserEntity resUser=iUserService.findByUserCode(userRequestModel.userCode);
+        if(LtCommonUtil.isBlankOrNull(resUser)){
+            UserDetailEntity userDetail= LtModelUtil.copyTo(userRequestModel,UserDetailEntity.class);
+            UserEntity userEntity=new UserEntity();
+            userEntity.setUsername(userRequestModel.getUserCode());
+            userEntity.setRemark(userRequestModel.getPassWord());
+            userEntity.setPassword(passwordEncoder.encode(userRequestModel.getPassWord()));
+            userEntity.setMobile(userRequestModel.getMobile());
+            iUserService.save(userEntity);
+            iUserDetailService.save(userDetail);
+            return ResponseResult.success(ResponseResultConstants.SUCCESS);
+        }
+        else{
+            return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED.getCode(),CommonExceptionEnum.DATA_SAVE_FAILED.getMessage(),"用户已经存在");
+        }
+
+    }
+    @Transactional
+    public ResponseResult update(String userCode,UserDetailEntity mUserDetailEntity){
+        UserDetailEntity resultEntity=iUserDetailService.findByUserCode(userCode);
+        mUserDetailEntity.setId(resultEntity.getId());
+        iUserDetailService.updateById(mUserDetailEntity);
+
+        UserEntity userEntity=iUserService.findByUserCode(userCode);
+        userEntity.setStatus(mUserDetailEntity.status);
+        iUserService.updateById(userEntity);
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 

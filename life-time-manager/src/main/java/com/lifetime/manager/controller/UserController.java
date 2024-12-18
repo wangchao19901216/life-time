@@ -1,6 +1,7 @@
 package com.lifetime.manager.controller;
 
 import com.lifetime.common.enums.CommonExceptionEnum;
+import com.lifetime.common.manager.entity.UserDetailEntity;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.manager.business.UserBusiness;
 import com.lifetime.manager.model.UserLoginRequestModel;
@@ -13,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.security.Principal;
 
 /**
@@ -74,6 +76,19 @@ public class UserController {
        catch (Exception exception){
            return ResponseResult.error(500,exception.getMessage());
        }
+    }
+
+
+    @PutMapping("{userCode}")
+    @ApiOperation(value = "修改", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult update(@PathVariable String userCode, @RequestBody UserDetailEntity userDetailEntity) {
+        try {
+            return  userBusiness.update(userCode,userDetailEntity);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED);
+        }
     }
 
 }

@@ -1,13 +1,13 @@
 package com.lifetime.common.exception;
 
+import com.lifetime.common.enums.CommonExceptionEnum;
 import com.lifetime.common.response.ResponseResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Auther:wangchao
@@ -19,16 +19,16 @@ import java.util.List;
 public class ValidExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseResult handlerMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        System.out.println("==================================================");
-        System.out.println(ex);
         BindingResult bindingResult=ex.getBindingResult();
-        List<String> list = new LinkedList<>();
+        List<Map<String,String>> list=new ArrayList<>();
         bindingResult.getFieldErrors().forEach(error -> {
+            Map<String,String> map=new HashMap<>();
+            map.put(error.getField(),error.getDefaultMessage());
 //            String field = error.getField();
 //            Object value = error.getRejectedValue();
-            String msg = error.getDefaultMessage();
-            list.add(msg);
+            //String msg = error.getDefaultMessage();
+            list.add(map);
         });
-        return ResponseResult.error(500,"数据效验失败！",list);
+        return ResponseResult.error(500, CommonExceptionEnum.INVALID_ARGUMENT_FORMAT.getMessage(),list);
     }
 }
