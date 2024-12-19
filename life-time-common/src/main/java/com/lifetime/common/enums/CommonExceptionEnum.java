@@ -20,6 +20,8 @@ public enum CommonExceptionEnum {
     INVALID_USERNAME(500,"用户名错误，请重试！"),
     INVALID_USERNAME_PASSWORD(500,"用户名或密码错误，请重试！"),
     INVALID_ACCESS_TOKEN(500,"无效的用户访问令牌！"),
+
+    ARGUMENT_ERROR(500,"数据验证失败！"),
     ARGUMENT_NULL_EXIST(500,"数据验证失败，接口调用参数存在空值，请核对！"),
     ARGUMENT_PK_ID_NULL(500,"数据验证失败，接口调用主键Id参数为空，请核对！"),
     INVALID_ARGUMENT_FORMAT(500,"数据验证失败，不合法的参数格式，请核对！"),

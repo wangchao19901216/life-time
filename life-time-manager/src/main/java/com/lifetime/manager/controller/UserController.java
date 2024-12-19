@@ -119,24 +119,21 @@ public class UserController {
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult checkPassword(@RequestBody UserLoginRequestModel userLoginRequestModel) {
         try {
-            return ResponseResult.success("成功",  userBusiness.checkPassWord(userLoginRequestModel));
+            return  userBusiness.checkPassWord(userLoginRequestModel);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
         }
-
     }
-
 
     @PostMapping("/check/password/level")
     @ApiOperation(value = "查询密码强度")
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult searchPWLevel(@RequestBody UserLoginRequestModel userLoginRequestModel) {
         try {
-            return ResponseResult.success("成功", userBusiness.searchPWLevel(userLoginRequestModel));
+            return userBusiness.searchPWLevel(userLoginRequestModel);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
         }
-
     }
 
 }

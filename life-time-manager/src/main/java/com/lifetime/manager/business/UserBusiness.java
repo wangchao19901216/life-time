@@ -22,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +30,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigInteger;
-import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,9 +58,9 @@ public class UserBusiness {
     @Autowired
     RedisTemplate redisTemplate;
 
-    public ResponseResult getToken(String grant_type,UserLoginRequestModel userLoginRequestModel){
-        try{
-            if(LtCommonUtil.existBlankArgument(userLoginRequestModel.userCode,userLoginRequestModel.passWord)){
+    public ResponseResult getToken(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        try {
+            if (LtCommonUtil.existBlankArgument(userLoginRequestModel.userCode, userLoginRequestModel.passWord)) {
                 return ResponseResult.error(CommonExceptionEnum.ARGUMENT_NULL_EXIST);
             }
             //从Eureka中获取认证服务器的地址
@@ -90,57 +87,58 @@ public class UserBusiness {
                 return ResponseResult.success(authToken);
             }
             return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
-        }
-        catch (Exception exception){
-            return  ResponseResult.error(500,exception.getMessage());
+        } catch (Exception exception) {
+            return ResponseResult.error(500, exception.getMessage());
         }
 
     }
-    public ResponseResult login(String grant_type,UserLoginRequestModel userLoginRequestModel){
-        try{
-            ResponseResult responseResult=getToken(grant_type,userLoginRequestModel);
-            if(responseResult.getCode()==200){
-                AuthTokenModel authTokenModel= (AuthTokenModel) responseResult.getData();
-                UserVo userVo= buildUserVo(authTokenModel.getAccess_token(), userLoginRequestModel.userCode);
+
+    public ResponseResult login(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        try {
+            ResponseResult responseResult = getToken(grant_type, userLoginRequestModel);
+            if (responseResult.getCode() == 200) {
+                AuthTokenModel authTokenModel = (AuthTokenModel) responseResult.getData();
+                UserVo userVo = buildUserVo(authTokenModel.getAccess_token(), userLoginRequestModel.userCode);
                 responseResult.setData(userVo);
+                return responseResult;
+            } else {
+                return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
             }
-            return  responseResult;
-        }
-        catch (Exception exception){
-            return  ResponseResult.error(500,exception.getMessage());
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
         }
     }
-    public ResponseResult loginEncrypt(String grant_type,UserLoginRequestModel userLoginRequestModel){
+
+    public ResponseResult loginEncrypt(String grant_type, UserLoginRequestModel userLoginRequestModel) {
         try {
             userLoginRequestModel.userCode = CrypToUtil.decrypt(userLoginRequestModel.userCode);
             userLoginRequestModel.passWord = CrypToUtil.decrypt(userLoginRequestModel.passWord);
-            return  login(grant_type,userLoginRequestModel);
-        }
-        catch (Exception exception){
-            return  ResponseResult.error(500,exception.getMessage());
+            return login(grant_type, userLoginRequestModel);
+        } catch (Exception exception) {
+            return ResponseResult.error(500, exception.getMessage());
         }
     }
 
-    public ResponseResult loginByMobile(String mobile){
+    public ResponseResult loginByMobile(String mobile) {
         try {
-            UserLoginRequestModel userLoginRequestModel=new UserLoginRequestModel();
-            userLoginRequestModel.passWord="123456";
-            userLoginRequestModel.userCode=mobile;
+            UserLoginRequestModel userLoginRequestModel = new UserLoginRequestModel();
+            userLoginRequestModel.passWord = "123456";
+            userLoginRequestModel.userCode = mobile;
 
             redisTemplate.opsForValue().set(RedisConstants.MOBILE_LOGIN + mobile, "123456", 60, TimeUnit.SECONDS);
 
-            return  login("sms_code",userLoginRequestModel);
-        }
-        catch (Exception exception){
-            return  ResponseResult.error(500,exception.getMessage());
+            return login("sms_code", userLoginRequestModel);
+        } catch (Exception exception) {
+            return ResponseResult.error(500, exception.getMessage());
         }
     }
+
     @Transactional
-    public ResponseResult add(UserRequestModel userRequestModel){
-        UserEntity resUser=iUserService.findByUserCode(userRequestModel.userCode);
-        if(LtCommonUtil.isBlankOrNull(resUser)){
-            UserDetailEntity userDetail= LtModelUtil.copyTo(userRequestModel,UserDetailEntity.class);
-            UserEntity userEntity=new UserEntity();
+    public ResponseResult add(UserRequestModel userRequestModel) {
+        UserEntity resUser = iUserService.findByUserCode(userRequestModel.userCode);
+        if (LtCommonUtil.isBlankOrNull(resUser)) {
+            UserDetailEntity userDetail = LtModelUtil.copyTo(userRequestModel, UserDetailEntity.class);
+            UserEntity userEntity = new UserEntity();
             userEntity.setUsername(userRequestModel.getUserCode());
             userEntity.setRemark(userRequestModel.getPassWord());
             userEntity.setPassword(passwordEncoder.encode(userRequestModel.getPassWord()));
@@ -148,53 +146,55 @@ public class UserBusiness {
             iUserService.save(userEntity);
             iUserDetailService.save(userDetail);
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
-        }
-        else{
-            return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED.getCode(),CommonExceptionEnum.DATA_SAVE_FAILED.getMessage(),"用户已经存在");
+        } else {
+            return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED.getCode(), CommonExceptionEnum.DATA_SAVE_FAILED.getMessage(), "用户已经存在");
         }
 
     }
+
     @Transactional
-    public ResponseResult update(String userCode,UserDetailEntity mUserDetailEntity){
-        UserDetailEntity resultEntity=iUserDetailService.findByUserCode(userCode);
+    public ResponseResult update(String userCode, UserDetailEntity mUserDetailEntity) {
+        UserDetailEntity resultEntity = iUserDetailService.findByUserCode(userCode);
         mUserDetailEntity.setId(resultEntity.getId());
         iUserDetailService.updateById(mUserDetailEntity);
 
-        UserEntity userEntity=iUserService.findByUserCode(userCode);
+        UserEntity userEntity = iUserService.findByUserCode(userCode);
         userEntity.setStatus(mUserDetailEntity.status);
         iUserService.updateById(userEntity);
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 
     @Transactional
-    public ResponseResult delete(String userCode){
-        UserDetailEntity resultEntity=iUserDetailService.findByUserCode(userCode);
+    public ResponseResult delete(String userCode) {
+        UserDetailEntity resultEntity = iUserDetailService.findByUserCode(userCode);
         iUserDetailService.removeById(resultEntity.getId());
-        UserEntity userEntity=iUserService.findByUserCode(userCode);
+        UserEntity userEntity = iUserService.findByUserCode(userCode);
         iUserService.removeById(userEntity.getId());
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 
-    public ResponseResult updatePassWord(UserLoginRequestModel userLoginRequestModel){
-        iUserService.updatePassword(userLoginRequestModel.userCode,userLoginRequestModel.passWord);
+    public ResponseResult updatePassWord(UserLoginRequestModel userLoginRequestModel) {
+        iUserService.updatePassword(userLoginRequestModel.userCode, passwordEncoder.encode(userLoginRequestModel.passWord));
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 
-    public ResponseResult checkPassWord(UserLoginRequestModel userLoginRequestModel){
-        iUserService.checkPassword(userLoginRequestModel.userCode,userLoginRequestModel.passWord);
-        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    public ResponseResult checkPassWord(UserLoginRequestModel userLoginRequestModel) {
+        if (iUserService.checkPassword(userLoginRequestModel.userCode, userLoginRequestModel.passWord))
+            return ResponseResult.success(ResponseResultConstants.SUCCESS);
+        else
+            return ResponseResult.error(CommonExceptionEnum.ARGUMENT_ERROR);
     }
 
-    public ResponseResult searchPWLevel(UserLoginRequestModel userLoginRequestModel){
+    public ResponseResult searchPWLevel(UserLoginRequestModel userLoginRequestModel) {
         return ResponseResult.success(PWUtil.getPasswordLevel(userLoginRequestModel.getPassWord()).getMessage());
     }
 
 
-    public UserVo buildUserVo(String token,String userCode){
-        UserVo userVo=new UserVo();
+    public UserVo buildUserVo(String token, String userCode) {
+        UserVo userVo = new UserVo();
         userVo.setToken(token);
         userVo.setUserDetail(iUserDetailService.findByUserCode(userCode));
-        return  userVo;
+        return userVo;
     }
 
     private String getHttpBasic(String clientId, String clientSecret) {
