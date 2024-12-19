@@ -12,6 +12,6 @@ import java.io.Serializable;
  */
 @Data
 public class UserLoginRequestModel implements Serializable {
-    public String userName;
+    public String userCode;
     public String passWord;
 }

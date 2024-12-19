@@ -13,6 +13,7 @@ import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.util.CrypToUtil;
 import com.lifetime.common.util.LtCommonUtil;
 import com.lifetime.common.util.LtModelUtil;
+import com.lifetime.common.util.PWUtil;
 import com.lifetime.manager.config.AuthConfig;
 import com.lifetime.manager.model.UserLoginRequestModel;
 import com.lifetime.manager.model.UserRequestModel;
@@ -62,7 +63,7 @@ public class UserBusiness {
 
     public ResponseResult getToken(String grant_type,UserLoginRequestModel userLoginRequestModel){
         try{
-            if(LtCommonUtil.existBlankArgument(userLoginRequestModel.userName,userLoginRequestModel.passWord)){
+            if(LtCommonUtil.existBlankArgument(userLoginRequestModel.userCode,userLoginRequestModel.passWord)){
                 return ResponseResult.error(CommonExceptionEnum.ARGUMENT_NULL_EXIST);
             }
             //从Eureka中获取认证服务器的地址
@@ -77,7 +78,7 @@ public class UserBusiness {
             //定义body
             LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("grant_type", grant_type);
-            body.add("username", userLoginRequestModel.userName);
+            body.add("username", userLoginRequestModel.userCode);
             body.add("password", userLoginRequestModel.passWord);
             String authUrl = authConfig.getTokenUrl();
             HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, header);
@@ -100,7 +101,7 @@ public class UserBusiness {
             ResponseResult responseResult=getToken(grant_type,userLoginRequestModel);
             if(responseResult.getCode()==200){
                 AuthTokenModel authTokenModel= (AuthTokenModel) responseResult.getData();
-                UserVo userVo= buildUserVo(authTokenModel.getAccess_token(), userLoginRequestModel.userName);
+                UserVo userVo= buildUserVo(authTokenModel.getAccess_token(), userLoginRequestModel.userCode);
                 responseResult.setData(userVo);
             }
             return  responseResult;
@@ -111,7 +112,7 @@ public class UserBusiness {
     }
     public ResponseResult loginEncrypt(String grant_type,UserLoginRequestModel userLoginRequestModel){
         try {
-            userLoginRequestModel.userName = CrypToUtil.decrypt(userLoginRequestModel.userName);
+            userLoginRequestModel.userCode = CrypToUtil.decrypt(userLoginRequestModel.userCode);
             userLoginRequestModel.passWord = CrypToUtil.decrypt(userLoginRequestModel.passWord);
             return  login(grant_type,userLoginRequestModel);
         }
@@ -124,7 +125,7 @@ public class UserBusiness {
         try {
             UserLoginRequestModel userLoginRequestModel=new UserLoginRequestModel();
             userLoginRequestModel.passWord="123456";
-            userLoginRequestModel.userName=mobile;
+            userLoginRequestModel.userCode=mobile;
 
             redisTemplate.opsForValue().set(RedisConstants.MOBILE_LOGIN + mobile, "123456", 60, TimeUnit.SECONDS);
 
@@ -134,9 +135,6 @@ public class UserBusiness {
             return  ResponseResult.error(500,exception.getMessage());
         }
     }
-
-
-
     @Transactional
     public ResponseResult add(UserRequestModel userRequestModel){
         UserEntity resUser=iUserService.findByUserCode(userRequestModel.userCode);
@@ -175,6 +173,20 @@ public class UserBusiness {
         UserEntity userEntity=iUserService.findByUserCode(userCode);
         iUserService.removeById(userEntity.getId());
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+    public ResponseResult updatePassWord(UserLoginRequestModel userLoginRequestModel){
+        iUserService.updatePassword(userLoginRequestModel.userCode,userLoginRequestModel.passWord);
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+    public ResponseResult checkPassWord(UserLoginRequestModel userLoginRequestModel){
+        iUserService.checkPassword(userLoginRequestModel.userCode,userLoginRequestModel.passWord);
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+    public ResponseResult searchPWLevel(UserLoginRequestModel userLoginRequestModel){
+        return ResponseResult.success(PWUtil.getPasswordLevel(userLoginRequestModel.getPassWord()).getMessage());
     }
 
 

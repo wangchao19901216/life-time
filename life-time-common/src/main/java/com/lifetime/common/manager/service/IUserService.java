@@ -14,4 +14,6 @@ public interface IUserService extends BaseService<UserEntity> {
     UserEntity findByMobile(String mobile);
     Integer updatePassword(String userCode, String pw);
     Integer updateStatus(String userCode, Integer status);
+
+    Boolean checkPassword(String userCode,String passWord);
 }

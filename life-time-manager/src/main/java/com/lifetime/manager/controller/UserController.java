@@ -102,4 +102,41 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/update/password")
+    @ApiOperation(value = "修改密码")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult updatePassword(@RequestBody UserLoginRequestModel userLoginRequestModel) {
+        try {
+            return ResponseResult.success("成功", userBusiness.updatePassWord(userLoginRequestModel));
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
+        }
+    }
+
+    @PostMapping("/check/password")
+    @ApiOperation(value = "验证密码")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult checkPassword(@RequestBody UserLoginRequestModel userLoginRequestModel) {
+        try {
+            return ResponseResult.success("成功",  userBusiness.checkPassWord(userLoginRequestModel));
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
+        }
+
+    }
+
+
+    @PostMapping("/check/password/level")
+    @ApiOperation(value = "查询密码强度")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult searchPWLevel(@RequestBody UserLoginRequestModel userLoginRequestModel) {
+        try {
+            return ResponseResult.success("成功", userBusiness.searchPWLevel(userLoginRequestModel));
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
+        }
+
+    }
+
 }

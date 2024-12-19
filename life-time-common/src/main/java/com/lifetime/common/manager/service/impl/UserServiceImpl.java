@@ -12,6 +12,7 @@ import com.lifetime.common.util.QueryUtil;
 import com.lifetime.common.manager.dao.UserMapper;
 import com.lifetime.common.manager.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,9 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements IUserService {
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public SearchResponse<UserEntity> searchList(SearchRequest searchRequest) {
@@ -65,5 +69,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
     @Override
     public Integer updateStatus(String userCode, Integer status) {
         return userMapper.updateStatus(userCode,status);
+    }
+
+    @Override
+    public Boolean checkPassword(String userCode, String passWord) {
+        UserEntity userEntity= findByUserCode(userCode);
+        return passwordEncoder.matches(passWord,userEntity.getPassword());
     }
 }
