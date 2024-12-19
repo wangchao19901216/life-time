@@ -11,7 +11,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-@TableName("LT_USER_DETAIL")
+@TableName("LT_M_USER_DETAIL")
 public class UserDetailEntity extends BaseEntity  {
 
     @ApiModelProperty(name = "用户编码",notes = "")

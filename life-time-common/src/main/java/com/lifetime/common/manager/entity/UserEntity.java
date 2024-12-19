@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Data
-@TableName("LT_USER")
+@TableName("LT_M_USER")
 public class UserEntity extends BaseEntity implements UserDetails {
 
     @ApiModelProperty(name = "用户编码",notes = "")

@@ -108,7 +108,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult updatePassword(@RequestBody UserLoginRequestModel userLoginRequestModel) {
         try {
-            return ResponseResult.success("成功", userBusiness.updatePassWord(userLoginRequestModel));
+            return userBusiness.updatePassWord(userLoginRequestModel);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
         }

@@ -9,11 +9,11 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface UserMapper extends BaseDaoMapper<UserEntity> {
 
-    @Select("update  LT_USER set PASSWORD=#{pw} where USER_CODE=#{userCode}")
+    @Select("update  LT_M_USER set PASSWORD=#{pw} where USER_CODE=#{userCode}")
     Integer updatePassword(String userCode, String pw);
 
 
-    @Update("update LT_USER set status=#{status} where USER_CODE=#{userCode}")
+    @Update("update LT_M_USER set status=#{status} where USER_CODE=#{userCode}")
     Integer updateStatus(String userCode, Integer status);
 
 
