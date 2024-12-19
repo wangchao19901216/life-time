@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.ws.rs.DELETE;
 import java.math.BigInteger;
 import java.security.Principal;
 
@@ -64,8 +65,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("")
     @ApiOperation(value = "新增", notes = "")
     @PreAuthorize("hasAuthority('all')")
@@ -85,6 +84,18 @@ public class UserController {
     public ResponseResult update(@PathVariable String userCode, @RequestBody UserDetailEntity userDetailEntity) {
         try {
             return  userBusiness.update(userCode,userDetailEntity);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED);
+        }
+    }
+
+    @DeleteMapping("{userCode}")
+    @ApiOperation(value = "删除", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult delete(@PathVariable String userCode) {
+        try {
+            return  userBusiness.delete(userCode);
         }
         catch (Exception exception){
             return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED);

@@ -168,6 +168,15 @@ public class UserBusiness {
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 
+    @Transactional
+    public ResponseResult delete(String userCode){
+        UserDetailEntity resultEntity=iUserDetailService.findByUserCode(userCode);
+        iUserDetailService.removeById(resultEntity.getId());
+        UserEntity userEntity=iUserService.findByUserCode(userCode);
+        iUserService.removeById(userEntity.getId());
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
 
     public UserVo buildUserVo(String token,String userCode){
         UserVo userVo=new UserVo();
