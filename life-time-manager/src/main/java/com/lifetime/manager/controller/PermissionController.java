@@ -8,6 +8,7 @@ import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.manager.business.PermissionBusiness;
 import com.lifetime.manager.business.ThemeBusiness;
+import com.lifetime.manager.model.PermissionRequestModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,16 @@ public class PermissionController {
             return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED);
         }
     }
+    @PostMapping("/with/button")
+    @ApiOperation(value = "增加(含按钮)")
+    public ResponseResult saveWithButton(@Validated @RequestBody PermissionRequestModel requestModel) {
+        try {
+            return  permissionBusiness.saveWithButton(requestModel);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED);
+        }
+    }
     @DeleteMapping("/{permissionId}")
     @ApiOperation(value = "删除")
     public ResponseResult delete(@PathVariable String permissionId) {
@@ -60,7 +71,19 @@ public class PermissionController {
             return  permissionBusiness.update(permissionId,permissionEntity);
         }
         catch (Exception exception){
-            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED);
+            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED);
+        }
+    }
+
+    @PutMapping("/with/buttons")
+    @ApiOperation(value = "修改(含按钮)")
+    @RepeatSubmit()
+    public ResponseResult updateWithButton(@RequestBody PermissionRequestModel requestModel) {
+        try {
+            return  permissionBusiness.updateWithButton(requestModel);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED);
         }
     }
 
@@ -69,7 +92,18 @@ public class PermissionController {
     @ApiOperation(value = "查询")
     public ResponseResult searchList(@RequestBody SearchRequest searchRequest) {
         try {
-            return ResponseResult.success("成功",permissionBusiness.search(searchRequest));
+            return  permissionBusiness.search(searchRequest);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("/search/{permissionId}")
+    @ApiOperation(value = "查询")
+    public ResponseResult searchOneWithButton(@PathVariable String  permissionId) {
+        try {
+            return  permissionBusiness.searchOneWithButton(permissionId);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
         }

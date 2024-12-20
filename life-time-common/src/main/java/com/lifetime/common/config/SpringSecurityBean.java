@@ -1,4 +1,4 @@
-package com.lifetime.common.config.config;
+package com.lifetime.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

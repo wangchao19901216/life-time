@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * @author:wangchao
  * @date: 2023/5/9-21:32
- * @description: com.sh3h.common.util
+ * @description: com.lifetime.common.util
  * @Version:1.0
  */
 public class LtCommonUtil {

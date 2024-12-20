@@ -7,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * @author:wangchao
  * @date: 2023/12/11-09:39
- * @description: com.sh3h.common.base.util
+ * @description: com.lifetime.common.base.util
  * @Version:1.0
  */
 public class CrypToUtil {

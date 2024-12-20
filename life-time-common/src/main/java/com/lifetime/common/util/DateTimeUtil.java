@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author:wangchao
  * @date: 2023/5/4-18:30
- * @description: com.sh3h.common.util
+ * @description: com.lifetime.common.util
  * @Version:1.0
  */
 public class DateTimeUtil {

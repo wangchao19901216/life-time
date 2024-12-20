@@ -15,7 +15,6 @@ public class PermissionEntity extends BaseEntity {
 
     @ApiModelProperty(name = "权限编号",notes = "")
     @TableField("PERMISSION_ID")
-    @NotEmpty(message = "权限编号不能为空")
     private String permissionId ;
 
     @ApiModelProperty(value = "权限类型(0-目录 1-菜单 2-按钮)")
@@ -24,7 +23,6 @@ public class PermissionEntity extends BaseEntity {
 
     @ApiModelProperty(value = "权限父节点")
     @TableField("PARENT_ID")
-    @NotEmpty(message = "权限父节点不能为空")
     private String parentId;
 
     @ApiModelProperty(value = "权限名称")
