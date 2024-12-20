@@ -72,6 +72,7 @@ public class ResponseResult<T> {
         return new ResponseResult<>(errorCode, errorMessage);
     }
 
+
     /**
      * 创建错误对象。
      * 如果返回错误对象，errorCode 和 errorMessage 分别取自于参数 errorCodeEnum 的 getCode() 和参数 errorMessage。
@@ -83,7 +84,6 @@ public class ResponseResult<T> {
     public static <T> ResponseResult<T> error(CommonExceptionEnum errorCodeEnum, String errorMessage) {
         return error(errorCodeEnum.getCode(), errorMessage);
     }
-
     /**
      * 创建错误对象。
      * 如果返回错误对象，errorCode 和 errorMessage 分别取自于参数 errorCodeEnum 的 getCode() 和 getMessage()。

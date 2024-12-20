@@ -8,11 +8,6 @@ package com.lifetime.common.enums;
 
 public enum CommonExceptionEnum {
 
-    ERROR_FIND_DISPOSE_REPORT(500, "处置报告信息查找失败"),
-    ERROR_FIND_DISPOSE(500, "处置信息查找失败"),
-    ERROR_RELATION(500, "处理先联信息失败"),
-    ERROR_ATTACHMENT(500, "处理附件失败"),
-
     ERROR_EMPTY(501, "当前数据不存在"),
     DATA_NOT_EXIST(501,"数据不存在！"),
     UNHANDLED_EXCEPTION(500,"未处理的异常！"),
@@ -40,6 +35,8 @@ public enum CommonExceptionEnum {
     NO_OPERATION_PERMISSION(500,"当前用户没有操作权限，请核对！"),
     REDIS_CACHE_ACCESS_TIMEOUT(500,"Redis缓存数据访问超时，请刷新后重试！"),
     REDIS_CACHE_ACCESS_STATE_ERROR(500,"Redis缓存数据访问状态错误，请刷新后重试！"),
+
+
     FLOW_SUBMIT_ERROR(500,"流程引擎调用失败");
 
     final Integer code;
