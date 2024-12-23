@@ -7,8 +7,6 @@ import com.lifetime.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-
 @Data
 @TableName("LT_M_PERMISSION")
 public class PermissionEntity extends BaseEntity {

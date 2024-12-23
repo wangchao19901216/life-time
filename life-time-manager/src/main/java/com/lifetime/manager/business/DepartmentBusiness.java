@@ -41,7 +41,6 @@ public class DepartmentBusiness {
             iDepartmentService.save(departmentEntity);
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
         }
-
     }
 
     public ResponseResult remove(String deptCode) {
