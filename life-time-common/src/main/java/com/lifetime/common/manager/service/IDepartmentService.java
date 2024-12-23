@@ -1,7 +1,6 @@
 package com.lifetime.common.manager.service;
 
 import com.lifetime.common.manager.entity.DepartmentEntity;
-import com.lifetime.common.manager.entity.PermissionEntity;
 import com.lifetime.common.service.BaseService;
 
 import java.util.List;

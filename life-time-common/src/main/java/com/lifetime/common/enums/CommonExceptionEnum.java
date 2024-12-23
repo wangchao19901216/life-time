@@ -23,6 +23,7 @@ public enum CommonExceptionEnum {
     INVALID_STATUS_ARGUMENT(500,"数据验证失败，无效的状态参数值，请核对！"),
     DATA_SAVE_FAILED(500,"数据保存失败！"),
     DATA_DELETE_FAILED(500,"数据删除失败！"),
+    DATA_DELETE_FAILED_DEFAULT(500,"系统数据，不允许删除！"),
     DATA_UPDATE_FAILED(500,"数据更新失败！"),
     DATA_SEARCH_FAILED(500,"数据查询失败！"),
     DATA_ACCESS_FAILED(500,"数据访问失败，请联系管理员！"),

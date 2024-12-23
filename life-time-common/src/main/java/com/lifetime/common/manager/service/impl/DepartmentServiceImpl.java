@@ -40,7 +40,6 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     public DepartmentEntity findByDeptCode(String deptCode) {
         LambdaQueryWrapper<DepartmentEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DepartmentEntity::getDepartmentCode, deptCode);
-        queryWrapper.eq(DepartmentEntity::getStatus, 1);
         List<DepartmentEntity> permissionEntityList = mapper.selectList(queryWrapper);
         if(permissionEntityList.size()>0){
             return  permissionEntityList.get(0);
@@ -51,7 +50,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public List<DepartmentEntity> childDept(String deptCode, Integer flag) {
         LambdaQueryWrapper<DepartmentEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DepartmentEntity::getDepartmentCode, deptCode);
+        queryWrapper.eq(DepartmentEntity::getDepartmentParentCode, deptCode);
         if(flag==StatusConstants.ENABLE){
             queryWrapper.eq(DepartmentEntity::getStatus, StatusConstants.ENABLE);
         }

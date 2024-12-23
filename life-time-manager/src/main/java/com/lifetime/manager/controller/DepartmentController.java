@@ -73,16 +73,14 @@ public class DepartmentController {
         }
     }
 
-//
-//    @PostMapping("/search/{permissionId}")
-//    @ApiOperation(value = "查询")
-//    public ResponseResult searchOneWithButton(@PathVariable String  permissionId) {
-//        try {
-//            return  permissionBusiness.searchOneWithButton(permissionId);
-//        } catch (Exception exception) {
-//            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
-//        }
-//    }
-//
+    @PostMapping("/tree")
+    @ApiOperation(value = "查询-树型")
+    public ResponseResult tree(@RequestBody SearchRequest searchRequest) {
+        try {
+            return  departmentBusiness.getTree(searchRequest);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
 
 }

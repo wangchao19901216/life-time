@@ -1,6 +1,8 @@
 package com.lifetime.manager.business;
 
+import com.lifetime.common.constant.Constants;
 import com.lifetime.common.constant.ResponseResultConstants;
+import com.lifetime.common.constant.StatusConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
 import com.lifetime.common.manager.entity.CodeEntity;
 import com.lifetime.common.manager.service.ICodeService;
@@ -41,16 +43,18 @@ public class CodeBusiness {
 
     public ResponseResult remove(BigInteger id) {
         CodeEntity codeEntity = iCodeService.getById(id);
-        if (LtCommonUtil.isNotBlankOrNull(codeEntity)) {
-            List<CodeEntity> codeList = iCodeService.childEntity(codeEntity.codeType, codeEntity.codeValue);
-            if (codeList.size() > 0)
-                return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在子数据，无法删除!");
-            else {
-                iCodeService.removeById(id);
-                return ResponseResult.success(ResponseResultConstants.SUCCESS);
-            }
-        } else {
+        if (LtCommonUtil.isBlankOrNull(codeEntity)) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "未查到改字典，无法删除!");
+        }
+        if(codeEntity.getStatus()== StatusConstants.CAN_NOT_DELETE){
+            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
+        }
+        List<CodeEntity> codeList = iCodeService.childEntity(codeEntity.codeType, codeEntity.codeValue);
+        if (codeList.size() > 0)
+            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在子数据，无法删除!");
+        else {
+            iCodeService.removeById(id);
+            return ResponseResult.success(ResponseResultConstants.SUCCESS);
         }
     }
 

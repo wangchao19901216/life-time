@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@TableName("LT_HM_DEPARTMENT")
+@TableName("LT_M_DEPARTMENT")
 public class DepartmentEntity extends BaseEntity {
 
     @ApiModelProperty(value = "部门编号",notes = "")
