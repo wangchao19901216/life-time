@@ -12,10 +12,11 @@ import java.io.Serializable;
 
 /**
  * @Auther:wangchao
- * @Date: 2022/6/20-22:45
- * @Description: com.sh3h.base.entity
+ * @Date: 2024/12/20-22:45
+ * @Description: com.lifetime.common.manager.entity
  * @Version:1.0
  */
+
 @Data
 @TableName("oauth_client_details")
 public class ClientEntity implements Serializable {

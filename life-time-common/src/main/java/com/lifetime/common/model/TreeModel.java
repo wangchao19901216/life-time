@@ -3,6 +3,7 @@ package com.lifetime.common.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public class TreeModel implements Serializable {
     String name;
     String type;
     String note;
+    BigInteger id;
     List<TreeModel> child;
 }
 

@@ -6,9 +6,12 @@ import com.lifetime.common.constant.StatusConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
 import com.lifetime.common.enums.PermissionTypeEnum;
 import com.lifetime.common.manager.entity.PermissionEntity;
+import com.lifetime.common.manager.entity.RoleEntity;
 import com.lifetime.common.manager.service.IPermissionService;
+import com.lifetime.common.model.TreeModel;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
+import com.lifetime.common.response.SearchResponse;
 import com.lifetime.common.util.LtCommonUtil;
 import com.lifetime.common.util.LtModelUtil;
 import com.lifetime.common.util.SnowflakeUtil;
@@ -143,6 +146,56 @@ public class PermissionBusiness {
                 .permission(permissionEntity)
                 .buttons(buttons)
                 .build();
+    }
+
+
+
+    public ResponseResult getTree(SearchRequest searchRequest) {
+        searchRequest.pageParams.pageSize=-1;//树型默认查所有
+        SearchResponse<PermissionEntity> searchResponse = iPermissionService.searchList(searchRequest);
+        List<PermissionEntity> resultList = searchResponse.results;
+        List<TreeModel> treeModelList = new ArrayList<>();
+
+        List<PermissionEntity> rootList = resultList.stream().filter(e -> e.getParentId().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());
+
+        for(PermissionEntity entity:rootList){
+            TreeModel treeModel=new TreeModel();
+            treeModel.setCode(entity.getPermissionId());
+            treeModel.setName(entity.getName());
+            treeModel.setType(entity.getType());
+            treeModel.setNote(entity.getRemark());
+            treeModel.setId(entity.getId());
+            List<TreeModel> recursiveList= recursive(treeModel,resultList);
+            treeModel.setChild(recursiveList);
+            treeModelList.add(treeModel);
+        }
+        return ResponseResult.success(treeModelList);
+    }
+
+    public List<TreeModel> recursive(TreeModel treeModel,List<PermissionEntity> list){
+
+        List<PermissionEntity> chidList=list.stream().filter(e->e.getParentId().toString().equals(treeModel.getCode())).collect(Collectors.toList());
+        List<TreeModel> chidTreeModelList=new ArrayList<>();
+        if(chidList.size()>0){
+            for(PermissionEntity entity:chidList){
+                TreeModel model=new TreeModel();
+                model.setCode(entity.getPermissionId());
+                model.setName(entity.getName());
+                model.setType(entity.getType());
+                model.setNote(entity.getRemark());
+                model.setId(entity.getId());
+                chidTreeModelList.add(model);
+            }
+
+            for(TreeModel model:chidTreeModelList){
+                List<TreeModel> recursiveList=recursive(model,list);
+                model.setChild(recursiveList);
+            }
+            return  chidTreeModelList;
+        }
+        else{
+            return null;
+        }
     }
 
 }

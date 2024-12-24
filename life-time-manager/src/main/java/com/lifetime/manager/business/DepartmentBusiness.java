@@ -1,5 +1,6 @@
 package com.lifetime.manager.business;
 
+import com.lifetime.common.constant.Constants;
 import com.lifetime.common.constant.ResponseResultConstants;
 import com.lifetime.common.constant.StatusConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
@@ -82,7 +83,7 @@ public class DepartmentBusiness {
         List<DepartmentEntity> resultList = searchResponse.results;
         List<TreeModel> treeModelList = new ArrayList<>();
 
-        List<DepartmentEntity> rootList = resultList.stream().filter(e -> e.getDepartmentParentCode().equals("-1")).collect(Collectors.toList());
+        List<DepartmentEntity> rootList = resultList.stream().filter(e -> e.getDepartmentParentCode().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());
 
         for(DepartmentEntity entity:rootList){
             TreeModel treeModel=new TreeModel();
@@ -90,6 +91,7 @@ public class DepartmentBusiness {
             treeModel.setName(entity.getDepartmentName());
             treeModel.setType(entity.getDepartmentType());
             treeModel.setNote(entity.getRemark());
+            treeModel.setId(entity.getId());
             List<TreeModel> recursiveList= recursive(treeModel,resultList);
             treeModel.setChild(recursiveList);
             treeModelList.add(treeModel);
@@ -108,6 +110,8 @@ public class DepartmentBusiness {
                 model.setType(entity.getDepartmentType());
                 model.setName(entity.getDepartmentName());
                 model.setNote(entity.getRemark());
+                treeModel.setId(entity.getId());
+                treeModel.setId(entity.getId());
                 chidTreeModelList.add(model);
             }
 

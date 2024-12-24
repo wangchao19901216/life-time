@@ -30,7 +30,7 @@ public class DepartmentEntity extends BaseEntity {
     @TableField("DEPARTMENT_GROUP")
     private String departmentGroup;
 
-    @ApiModelProperty(value = "部门类型")
+    @ApiModelProperty(value = "部门类型(0-目录 1-部门)")
     @TableField("DEPARTMENT_TYPE")
     private String departmentType;
 

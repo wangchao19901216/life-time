@@ -109,5 +109,15 @@ public class PermissionController {
         }
     }
 
+    @PostMapping("/tree")
+    @ApiOperation(value = "查询-树型")
+    public ResponseResult tree(@RequestBody SearchRequest searchRequest) {
+        try {
+            return  permissionBusiness.getTree(searchRequest);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
+
 
 }

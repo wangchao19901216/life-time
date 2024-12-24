@@ -15,5 +15,7 @@ import java.util.List;
  */
 public interface ICodeService extends BaseService<CodeEntity> {
     boolean isExist(String codeParent,String code);
+
+
     List<CodeEntity> childEntity(String codeType, String codeValue);
 }

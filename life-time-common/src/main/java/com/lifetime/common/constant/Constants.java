@@ -9,6 +9,7 @@ import java.util.Locale;
  */
 public class Constants
 {
+    public  static  final  String ROOT_VALUE="-1";
     /**
      * UTF-8 字符集
      */

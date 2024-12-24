@@ -27,12 +27,6 @@ import java.util.List;
 public class CodeServiceImpl extends ServiceImpl<CodeMapper, CodeEntity> implements ICodeService {
     @Autowired
     CodeMapper  codeMapper;
-    @Override
-    public boolean save(CodeEntity codeEntity) {
-        return super.save(codeEntity);
-    }
-
-
 
     @Override
     public SearchResponse<CodeEntity> searchList(SearchRequest searchRequest) {
