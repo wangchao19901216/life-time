@@ -8,6 +8,7 @@ import com.lifetime.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Lob;
 import java.io.Serializable;
 
 
@@ -36,5 +37,25 @@ public class RoleEntity extends BaseEntity implements Serializable {
     @ApiModelProperty(value="上级Code,默认为 0000")
     @TableField("ROLE_PARENT_CODE")
     public String roleParentCode="0000";
+
+    @ApiModelProperty(value="权限集合")
+    @TableField("PERMISSIONS")
+    @Lob
+    public String permissions;
+
+    @ApiModelProperty(value="数据权限(1=所有数据权限,2=自定义数据权限,3=本部门数据权限,4=本部门及以下数据权限,5=仅本人数据权限)")
+    @TableField("DATA_SCOPE")
+    public String dataScope;
+    @ApiModelProperty(value="自定义数据权限(部门)集合")
+    @TableField("DATA_DEPTS")
+    @Lob
+    public String dataDepts;
+
+    @ApiModelProperty(value="自定义数据权限(部门)集合")
+    @TableField("DATA_USERS")
+    @Lob
+    public String dataUsers;
+
+
 
 }
