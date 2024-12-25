@@ -43,7 +43,7 @@ public class PermissionController {
             return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED);
         }
     }
-    @PostMapping("/with/button")
+    @PostMapping("/with/buttons")
     @ApiOperation(value = "增加(含按钮)")
     public ResponseResult saveWithButton(@Validated @RequestBody PermissionRequestModel requestModel) {
         try {

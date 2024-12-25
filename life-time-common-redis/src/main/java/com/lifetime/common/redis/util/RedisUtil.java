@@ -144,7 +144,7 @@ public class RedisUtil {
      * @param time  时间(秒) -1为无期限
      * @return true成功 false 失败
      */
-    public void set(String key, String value, long time) {
+    public void set(String key, Object value, long time) {
         if (time > 0) {
             redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
         } else {

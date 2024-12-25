@@ -48,6 +48,13 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     }
 
     @Override
+    public List<DepartmentEntity> findByDeptCodeArray(String[] deptCode) {
+        LambdaQueryWrapper<DepartmentEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(DepartmentEntity::getDepartmentCode, deptCode);
+        return  mapper.selectList(queryWrapper);
+    }
+
+    @Override
     public List<DepartmentEntity> childDept(String deptCode, Integer flag) {
         LambdaQueryWrapper<DepartmentEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DepartmentEntity::getDepartmentParentCode, deptCode);

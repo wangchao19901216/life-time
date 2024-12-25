@@ -14,6 +14,8 @@ import java.util.List;
 public interface IDepartmentService extends BaseService<DepartmentEntity> {
     DepartmentEntity findByDeptCode(String deptCode);
 
+    List<DepartmentEntity> findByDeptCodeArray(String[] deptCode);
+
     /**
      * flag =0 不过滤 状态查询
      * */

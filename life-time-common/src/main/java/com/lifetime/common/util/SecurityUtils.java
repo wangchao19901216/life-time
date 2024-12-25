@@ -16,6 +16,8 @@ public class SecurityUtils {
      **/
     public static String getUserCode() {
         return  SecurityContextHolder.getContext().getAuthentication().getName();
+
+        //SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     /**

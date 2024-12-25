@@ -1,13 +1,18 @@
 package com.lifetime.manager.controller;
 
 import com.lifetime.common.enums.CommonExceptionEnum;
+import com.lifetime.common.manager.entity.DepartmentEntity;
+import com.lifetime.common.manager.entity.UserDepartmentEntity;
 import com.lifetime.common.manager.entity.UserDetailEntity;
+import com.lifetime.common.manager.entity.UserRoleEntity;
 import com.lifetime.common.response.ResponseResult;
+import com.lifetime.common.service.ValidatedList;
 import com.lifetime.manager.business.UserBusiness;
 import com.lifetime.manager.model.UserLoginRequestModel;
 import com.lifetime.manager.model.UserRequestModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +22,7 @@ import javax.validation.Valid;
 import javax.ws.rs.DELETE;
 import java.math.BigInteger;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * @author:wangchao
@@ -34,7 +40,14 @@ public class UserController {
     @PostMapping("login/{grant_type}")
     @ApiOperation(value = "用户登陆")
     public ResponseResult login(@PathVariable String grant_type, @RequestBody UserLoginRequestModel userLoginRequestModel) {
-         return  userBusiness.login(grant_type,userLoginRequestModel);
+         return  userBusiness.loginDependOnRedis(grant_type,userLoginRequestModel);
+    }
+
+
+    @PostMapping("refresh/{refreshToken}")
+    @ApiOperation(value = "刷新token")
+    public ResponseResult refreshToken(@PathVariable String refreshToken) {
+        return  userBusiness.refreshDependOnRedis(refreshToken);
     }
 
     @PostMapping("/login/encrypt/{grant_type}")
@@ -48,7 +61,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult getUserByToken(Principal principal) {
         try {
-            return ResponseResult.success(userBusiness.buildUserVo("",principal.getName()));
+            return ResponseResult.success(userBusiness.buildUserVo(null,principal.getName()));
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.INVALID_ACCESS_TOKEN);
         }
@@ -133,6 +146,30 @@ public class UserController {
             return userBusiness.searchPWLevel(userLoginRequestModel);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
+        }
+    }
+
+    @PostMapping("role/{userCode}")
+    @ApiOperation(value = "用户角色", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult bindUserRole(@Validated @RequestBody List<UserRoleEntity> list,@PathVariable String userCode) {
+        try {
+            return  userBusiness.bindUserRole(userCode,userCode,list);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+    @PostMapping("department/{userCode}")
+    @ApiOperation(value = "用户部门", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult save(@Validated @RequestBody ValidatedList<UserDepartmentEntity> list, @PathVariable String userCode) {
+        try {
+            return  userBusiness.bindUserDept(userCode,list);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
         }
     }
 

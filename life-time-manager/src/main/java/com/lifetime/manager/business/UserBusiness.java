@@ -1,22 +1,23 @@
 package com.lifetime.manager.business;
 
+import com.lifetime.common.constant.Constants;
 import com.lifetime.common.constant.ResponseResultConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
-import com.lifetime.common.manager.entity.UserDetailEntity;
-import com.lifetime.common.manager.entity.UserEntity;
-import com.lifetime.common.manager.service.IUserDetailService;
-import com.lifetime.common.manager.service.IUserService;
+import com.lifetime.common.enums.PermissionTypeEnum;
+import com.lifetime.common.manager.entity.*;
+import com.lifetime.common.manager.service.*;
+import com.lifetime.common.manager.vo.DepartmentVo;
 import com.lifetime.common.manager.vo.UserVo;
 import com.lifetime.common.model.AuthTokenModel;
 import com.lifetime.common.redis.constant.RedisConstants;
+import com.lifetime.common.redis.util.RedisUtil;
 import com.lifetime.common.response.ResponseResult;
-import com.lifetime.common.util.CrypToUtil;
-import com.lifetime.common.util.LtCommonUtil;
-import com.lifetime.common.util.LtModelUtil;
-import com.lifetime.common.util.PWUtil;
+import com.lifetime.common.util.*;
 import com.lifetime.manager.config.AuthConfig;
 import com.lifetime.manager.model.UserLoginRequestModel;
 import com.lifetime.manager.model.UserRequestModel;
+import org.apache.catalina.User;
+import org.assertj.core.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -24,13 +25,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigInteger;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author:wangchao
@@ -47,6 +57,15 @@ public class UserBusiness {
     IUserService iUserService;
 
     @Autowired
+    IUserRoleService iUserRoleService;
+
+    @Autowired
+    IUserDepartmentService iUserDepartmentService;
+
+    @Autowired
+    IDepartmentService iDepartmentService;
+
+    @Autowired
     AuthConfig authConfig;
 
     @Autowired
@@ -56,55 +75,111 @@ public class UserBusiness {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    RedisTemplate redisTemplate;
+    RedisUtil redisUtil;
 
-    public ResponseResult getToken(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+    public AuthTokenModel getToken(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        if (LtCommonUtil.existBlankArgument(userLoginRequestModel.userCode, userLoginRequestModel.passWord)) {
+
+            throw new RuntimeException(CommonExceptionEnum.ARGUMENT_NULL_EXIST.getMessage());
+        }
+        LinkedMultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.add("Authorization", getHttpBasic(authConfig.getClientId(), authConfig.getClientSecret()));
+
+        //定义body
+        LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", grant_type);
+        body.add("username", userLoginRequestModel.userCode);
+        body.add("password", userLoginRequestModel.passWord);
+        String authUrl = authConfig.getTokenUrl();
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, header);
+
+        ResponseEntity<AuthTokenModel> exchange = restTemplate.exchange(authUrl, HttpMethod.POST, httpEntity,
+                AuthTokenModel.class);
+        return exchange.getBody();
+    }
+
+    public AuthTokenModel refreshToken(String refreshToken) {
+        LinkedMultiValueMap<String, String> header = new LinkedMultiValueMap<>();
+        header.add("Authorization", getHttpBasic(authConfig.getClientId(), authConfig.getClientSecret()));
+
+        //定义body
+        LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("refresh_token", refreshToken);
+        String authUrl = authConfig.getTokenUrl();
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, header);
+
+        ResponseEntity<AuthTokenModel> exchange = restTemplate.exchange(authUrl, HttpMethod.POST, httpEntity,
+                AuthTokenModel.class);
+        return exchange.getBody();
+    }
+
+
+    public UserVo loginWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+        AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
+        UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
+        redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
+        return userVo;
+    }
+
+    public UserVo refreshTokenWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
         try {
-            if (LtCommonUtil.existBlankArgument(userLoginRequestModel.userCode, userLoginRequestModel.passWord)) {
-                return ResponseResult.error(CommonExceptionEnum.ARGUMENT_NULL_EXIST);
-            }
-            //从Eureka中获取认证服务器的地址
-            //从Eureka中获取认证服务的一个实例地址
-            //ServiceInstance serviceInstance= loadBalancerClient.choose("");
-            //
-            //URL url=serviceInstance.getUri();
-            //定义head
-            LinkedMultiValueMap<String, String> header = new LinkedMultiValueMap<>();
-            header.add("Authorization", getHttpBasic(authConfig.getClientId(), authConfig.getClientSecret()));
-
-            //定义body
-            LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-            body.add("grant_type", grant_type);
-            body.add("username", userLoginRequestModel.userCode);
-            body.add("password", userLoginRequestModel.passWord);
-            String authUrl = authConfig.getTokenUrl();
-            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, header);
-
-            ResponseEntity<AuthTokenModel> exchange = restTemplate.exchange(authUrl, HttpMethod.POST, httpEntity,
-                    AuthTokenModel.class);
-            AuthTokenModel authToken = exchange.getBody();
-            if (authToken != null) {
-                return ResponseResult.success(authToken);
-            }
-            return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
-        } catch (Exception exception) {
-            return ResponseResult.error(500, exception.getMessage());
+            String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+            UserVo userVo = LtModelUtil.copyTo(redisUtil.get(LOGIN_REDIS_KEY), UserVo.class);
+            AuthTokenModel authTokenModel = refreshToken(userVo.getAuthToken().getRefresh_token());
+            userVo.setAuthToken(authTokenModel);
+            redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
+            return userVo;
+        }catch (Exception exception){
+            throw  new RuntimeException("refresh_token 过期");
         }
 
     }
 
+
     public ResponseResult login(String grant_type, UserLoginRequestModel userLoginRequestModel) {
         try {
-            ResponseResult responseResult = getToken(grant_type, userLoginRequestModel);
-            if (responseResult.getCode() == 200) {
-                AuthTokenModel authTokenModel = (AuthTokenModel) responseResult.getData();
-                UserVo userVo = buildUserVo(authTokenModel.getAccess_token(), userLoginRequestModel.userCode);
-                responseResult.setData(userVo);
-                return responseResult;
-            } else {
-                return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
-            }
+            AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
+            UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
+            return ResponseResult.success(userVo);
         } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
+        }
+    }
+    public ResponseResult loginDependOnRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        try {
+            return ResponseResult.success(loginWithRedis(grant_type,userLoginRequestModel));
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
+        }
+    }
+    public ResponseResult refreshDependOnRedis(String refreshToken) {
+        try {
+            return ResponseResult.success(refreshToken(refreshToken));
+        } catch (Exception exception) {
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+    public ResponseResult getUserDependOnRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
+        UserVo userVo=null;
+        try {
+            String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+
+            if(LtCommonUtil.isNotBlankOrNull(redisUtil.get(LOGIN_REDIS_KEY))){
+                userVo=refreshTokenWithRedis(grant_type,userLoginRequestModel);
+            }
+            else{
+                userVo=loginWithRedis(grant_type,userLoginRequestModel);
+            }
+            return ResponseResult.success(userVo);
+        } catch (Exception exception) {
+            if(exception.getMessage().equals("refresh_token 过期")){
+                userVo=loginWithRedis(grant_type,userLoginRequestModel);
+                userVo.setActiveDept(exception.getMessage());
+                return ResponseResult.success(userVo);
+            }
             return ResponseResult.error(CommonExceptionEnum.INVALID_USERNAME_PASSWORD);
         }
     }
@@ -124,8 +199,7 @@ public class UserBusiness {
             UserLoginRequestModel userLoginRequestModel = new UserLoginRequestModel();
             userLoginRequestModel.passWord = "123456";
             userLoginRequestModel.userCode = mobile;
-
-            redisTemplate.opsForValue().set(RedisConstants.MOBILE_LOGIN + mobile, "123456", 60, TimeUnit.SECONDS);
+            redisUtil.set(RedisConstants.MOBILE_LOGIN + mobile, "123456", 60);
 
             return login("sms_code", userLoginRequestModel);
         } catch (Exception exception) {
@@ -190,17 +264,92 @@ public class UserBusiness {
     }
 
 
-    public UserVo buildUserVo(String token, String userCode) {
-        UserVo userVo = new UserVo();
-        userVo.setToken(token);
-        userVo.setUserDetail(iUserDetailService.findByUserCode(userCode));
-        return userVo;
+    public UserVo buildUserVo(AuthTokenModel authTokenModel, String userCode) {
+        List<String> deptCodeList=iUserDepartmentService.findByUserCode(userCode).stream().map(UserDepartmentEntity::getDepartmentCode).collect(Collectors.toList());
+        List<DepartmentVo> departmentEntityList=new ArrayList<>();
+        if(deptCodeList.size()>0){
+            departmentEntityList=LtModelUtil.copyCollectionTo(iDepartmentService.findByDeptCodeArray(deptCodeList.toArray(new String[0])),DepartmentVo.class) ;
+        }
+        return UserVo.builder()
+                .userDetail(iUserDetailService.findByUserCode(userCode))
+                .authToken(authTokenModel)
+                .departments(departmentEntityList)
+                .activeDept(departmentEntityList.size()>0?departmentEntityList.get(0).getDepartmentCode():null)
+                .build();
     }
 
     private String getHttpBasic(String clientId, String clientSecret) {
         String string = clientId + ":" + clientSecret;
         byte[] encode = Base64Utils.encode(string.getBytes());
         return "Basic " + new String(encode);
+    }
+
+
+    @Transactional
+    public ResponseResult bindUserRole(String userCode, String deptCode, List<UserRoleEntity> requestList) {
+        List<UserRoleEntity> list = new ArrayList<>();
+        //库里原始数据
+        List<UserRoleEntity> originalList = iUserRoleService.findByUserCode(userCode, deptCode);
+        for (UserRoleEntity userRoleEntity : requestList) {
+            if (LtCommonUtil.isNotBlankOrNull(userRoleEntity.getId())) {
+                list.add(userRoleEntity);
+            } else {
+                UserRoleEntity entity = LtModelUtil.copyTo(userRoleEntity, UserRoleEntity.class);
+                entity.setId(BigInteger.valueOf(SnowflakeUtil.nextLongId()));
+                list.add(entity);
+            }
+        }
+        iUserRoleService.saveOrUpdateBatch(list);
+
+        /**
+         * 处理删除的按钮权限
+         * */
+        //过滤掉新增的角色
+        List<UserRoleEntity> sourceList = requestList.stream().filter(e -> LtCommonUtil.isNotBlankOrNull(e.getId())).collect(Collectors.toList());
+
+        //已经删除的角色
+        List<UserRoleEntity> deleteList = originalList.stream()
+                .filter(p ->
+                        sourceList.stream().filter(
+                                r -> Objects.equals(r.getId(), p.getId())).collect(Collectors.toList()).size() == 0
+                ).collect(Collectors.toList());
+
+        if (deleteList.size() > 0) {
+            iUserRoleService.removeBatchByIds(deleteList);
+        }
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+
+    @Transactional
+    public ResponseResult bindUserDept(String userCode,List<UserDepartmentEntity> requestList) {
+        List<UserDepartmentEntity> list = new ArrayList<>();
+        //库里原始数据
+        List<UserDepartmentEntity> originalList = iUserDepartmentService.findByUserCode(userCode);
+        for (UserDepartmentEntity userDepartmentEntity : requestList) {
+            if (LtCommonUtil.isNotBlankOrNull(userDepartmentEntity.getId())) {
+                list.add(userDepartmentEntity);
+            } else {
+                UserDepartmentEntity entity = LtModelUtil.copyTo(userDepartmentEntity, UserDepartmentEntity.class);
+                entity.setId(BigInteger.valueOf(SnowflakeUtil.nextLongId()));
+                list.add(entity);
+            }
+        }
+        iUserDepartmentService.saveOrUpdateBatch(list);
+
+        /**
+         * 处理删除的按钮权限
+         * */
+        //过滤掉新增的数据
+        List<UserDepartmentEntity> sourceList = requestList.stream().filter(e -> LtCommonUtil.isNotBlankOrNull(e.getId())).collect(Collectors.toList());
+
+        //已经删除的数据
+        List<UserDepartmentEntity> deleteList = originalList.stream().filter(p -> sourceList.stream().filter(r -> Objects.equals(r.getId(), p.getId())).collect(Collectors.toList()).size() == 0).collect(Collectors.toList());
+
+        if (deleteList.size() > 0) {
+            iUserDepartmentService.removeBatchByIds(deleteList);
+        }
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
 
 }
