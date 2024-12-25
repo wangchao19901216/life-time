@@ -48,5 +48,13 @@ public class UserDetailEntity extends BaseEntity  {
 
     @ApiModelProperty(name = "家庭住址",notes = "")
     public String address ;
+
+    @ApiModelProperty(name = "所属部门",notes = "")
+    @TableField("DEPARTMENT_CODE")
+    public String departmentCode ;
+
+    @ApiModelProperty(name = "角色集合",notes = "")
+    @TableField("ROLES")
+    public String roles ;
 }
 

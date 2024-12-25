@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,6 +16,7 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Map;
 
 @Data
 @MappedSuperclass
@@ -51,5 +54,8 @@ public class BaseEntity implements Serializable {
 
     @TableField(value = "depart_name",fill = FieldFill.INSERT)
     public String departName;
+
+//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+//    private transient Map<String, Object> params;
 
 }

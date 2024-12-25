@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("client")
 @Api(tags = "客户端管理")
@@ -32,6 +34,7 @@ public class ClientController {
     @ApiImplicitParams({})
     public ResponseResult saveOrUpdate(@RequestBody ClientRequestModel clientDto) {
         try {
+
             clientDto.setClientSecret(passwordEncoder.encode(clientDto.clientSecret));
             clientService.save(LtModelUtil.copyTo(clientDto, ClientEntity.class));
             return ResponseResult.success("成功","成功");
