@@ -46,7 +46,7 @@ public class CodeBusiness {
         if (LtCommonUtil.isBlankOrNull(codeEntity)) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "未查到改字典，无法删除!");
         }
-        if(codeEntity.getStatus()== StatusConstants.CAN_NOT_DELETE){
+        if(codeEntity.getDataType()== StatusConstants.CAN_NOT_DELETE){
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
         }
         List<CodeEntity> codeList = iCodeService.childEntity(codeEntity.codeType, codeEntity.codeValue);

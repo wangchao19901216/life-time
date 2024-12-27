@@ -1,12 +1,12 @@
 package com.lifetime.manager.business;
 
-import com.lifetime.common.constant.Constants;
 import com.lifetime.common.constant.ResponseResultConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
-import com.lifetime.common.enums.PermissionTypeEnum;
+import com.lifetime.common.util.json.JsonUtil;
 import com.lifetime.common.manager.entity.*;
 import com.lifetime.common.manager.service.*;
 import com.lifetime.common.manager.vo.DepartmentVo;
+import com.lifetime.common.manager.vo.UserTestVo;
 import com.lifetime.common.manager.vo.UserVo;
 import com.lifetime.common.model.AuthTokenModel;
 import com.lifetime.common.redis.constant.RedisConstants;
@@ -16,30 +16,22 @@ import com.lifetime.common.util.*;
 import com.lifetime.manager.config.AuthConfig;
 import com.lifetime.manager.model.UserLoginRequestModel;
 import com.lifetime.manager.model.UserRequestModel;
-import org.apache.catalina.User;
-import org.assertj.core.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -108,7 +100,6 @@ public class UserBusiness {
         body.add("refresh_token", refreshToken);
         String authUrl = authConfig.getTokenUrl();
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, header);
-
         ResponseEntity<AuthTokenModel> exchange = restTemplate.exchange(authUrl, HttpMethod.POST, httpEntity,
                 AuthTokenModel.class);
         return exchange.getBody();
@@ -116,16 +107,22 @@ public class UserBusiness {
 
 
     public UserVo loginWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
-        String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
-        AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
-        UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
-        redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
-        return userVo;
+        try {
+            String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+            AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
+            UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
+            redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
+            return userVo;
+        }
+        catch (Exception exception){
+            return null;
+        }
     }
 
     public UserVo refreshTokenWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
         try {
             String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+            //转换有点问题
             UserVo userVo = LtModelUtil.copyTo(redisUtil.get(LOGIN_REDIS_KEY), UserVo.class);
             AuthTokenModel authTokenModel = refreshToken(userVo.getAuthToken().getRefresh_token());
             userVo.setAuthToken(authTokenModel);
@@ -136,7 +133,6 @@ public class UserBusiness {
         }
 
     }
-
 
     public ResponseResult login(String grant_type, UserLoginRequestModel userLoginRequestModel) {
         try {
@@ -286,23 +282,28 @@ public class UserBusiness {
 
 
     @Transactional
-    public ResponseResult bindUserRole(String userCode, String deptCode, List<UserRoleEntity> requestList) {
+    public ResponseResult bindUserRole(List<UserRoleEntity> requestList) {
         List<UserRoleEntity> list = new ArrayList<>();
+        String userCode=requestList.get(0).getUserCode();
+        String activeDept=requestList.get(0).getRoleDept();
+
         //库里原始数据
-        List<UserRoleEntity> originalList = iUserRoleService.findByUserCode(userCode, deptCode);
+        List<UserRoleEntity> originalList = iUserRoleService.findByUserCode(userCode, activeDept);
         for (UserRoleEntity userRoleEntity : requestList) {
             if (LtCommonUtil.isNotBlankOrNull(userRoleEntity.getId())) {
+                userRoleEntity.setDepartCode(activeDept);
                 list.add(userRoleEntity);
             } else {
                 UserRoleEntity entity = LtModelUtil.copyTo(userRoleEntity, UserRoleEntity.class);
                 entity.setId(BigInteger.valueOf(SnowflakeUtil.nextLongId()));
+                entity.setDepartCode(activeDept);
                 list.add(entity);
             }
         }
         iUserRoleService.saveOrUpdateBatch(list);
 
         /**
-         * 处理删除的按钮权限
+         * 处理删除的数据
          * */
         //过滤掉新增的角色
         List<UserRoleEntity> sourceList = requestList.stream().filter(e -> LtCommonUtil.isNotBlankOrNull(e.getId())).collect(Collectors.toList());
@@ -319,11 +320,20 @@ public class UserBusiness {
         }
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
+    public ResponseResult saveUserRole(List<UserRoleEntity> requestList) {
+        return ResponseResult.success(iUserRoleService.saveBatch(requestList));
+    }
+    public ResponseResult removeUserRole(BigInteger id) {
+        return ResponseResult.success(iUserRoleService.removeById(id));
+    }
+
+
 
 
     @Transactional
-    public ResponseResult bindUserDept(String userCode,List<UserDepartmentEntity> requestList) {
+    public ResponseResult bindUserDept(List<UserDepartmentEntity> requestList) {
         List<UserDepartmentEntity> list = new ArrayList<>();
+        String userCode=requestList.get(0).getUserCode();
         //库里原始数据
         List<UserDepartmentEntity> originalList = iUserDepartmentService.findByUserCode(userCode);
         for (UserDepartmentEntity userDepartmentEntity : requestList) {
@@ -350,6 +360,35 @@ public class UserBusiness {
             iUserDepartmentService.removeBatchByIds(deleteList);
         }
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+    public ResponseResult saveUserDept(List<UserDepartmentEntity> requestList) {
+        return ResponseResult.success(iUserDepartmentService.saveBatch(requestList));
+    }
+    public ResponseResult removeUserDept(BigInteger id) {
+        return ResponseResult.success(iUserDepartmentService.removeById(id));
+    }
+
+
+
+
+
+    public String getActiveDept(String userCode){
+        String activeDept="";
+        List<UserDepartmentEntity> userDepartmentEntityList=iUserDepartmentService.findByUserCode(userCode);
+        if(userDepartmentEntityList.size()>0){
+            for (UserDepartmentEntity entity:userDepartmentEntityList){
+                if(entity.activeDept.equals("1")){
+                    activeDept= entity.getDepartmentCode();
+                    break;
+                }
+            }
+            //防止初始值为0
+            if(activeDept.equals("")){
+                activeDept=userDepartmentEntityList.get(0).getDepartmentCode();
+            }
+        }
+        return activeDept;
     }
 
 }

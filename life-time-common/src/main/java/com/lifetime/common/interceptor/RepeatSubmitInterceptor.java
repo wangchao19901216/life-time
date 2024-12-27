@@ -1,8 +1,7 @@
 package com.lifetime.common.interceptor;
 
 import com.lifetime.common.annotation.RepeatSubmit;
-import com.lifetime.common.enums.CommonExceptionEnum;
-import com.lifetime.common.json.JSON;
+import com.lifetime.common.util.json.JsonUtil;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.util.ServletUtils;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,7 @@ public abstract class  RepeatSubmitInterceptor implements HandlerInterceptor {
                 if (this.isRepeatSubmit(request, annotation))
                 {
                     ResponseResult responseResult =ResponseResult.error(500,annotation.message());
-                    ServletUtils.renderString(response, JSON.marshal(responseResult));
+                    ServletUtils.renderString(response, JsonUtil.marshal(responseResult));
                     return false;
                 }
             }

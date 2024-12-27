@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("theme")
-@Api(tags = "系统样式设置")
+@Api(tags = "专题设置")
 @PreAuthorize("hasAuthority('all')")
 public class ThemeController {
     @Autowired

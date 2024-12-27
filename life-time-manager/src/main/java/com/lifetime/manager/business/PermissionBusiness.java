@@ -72,6 +72,9 @@ public class PermissionBusiness {
 
     public ResponseResult remove(String permissionId) {
         PermissionEntity permissionEntity = iPermissionService.findByPermissionId(permissionId);
+        if(permissionEntity.getDataType()==StatusConstants.CAN_NOT_DELETE){
+            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
+        }
         List<PermissionEntity> permissionEntityList = iPermissionService.childPermission(permissionId, StatusConstants.DISABLE);
         if (permissionEntityList.size() > 0)
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在子菜单，无法删除!");

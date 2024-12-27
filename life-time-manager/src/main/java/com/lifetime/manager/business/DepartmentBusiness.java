@@ -22,6 +22,7 @@ import jdk.nashorn.internal.runtime.RewriteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class DepartmentBusiness {
     @Autowired
     IDepartmentService iDepartmentService;
 
-    public ResponseResult save(DepartmentEntity  departmentEntity) {
+    public ResponseResult save(@Validated DepartmentEntity  departmentEntity) {
         DepartmentEntity resultEntity = iDepartmentService.findByDeptCode(departmentEntity.getDepartmentCode());
         if (LtCommonUtil.isNotBlankOrNull(resultEntity)) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "编号已经存在");
@@ -50,7 +51,7 @@ public class DepartmentBusiness {
 
     public ResponseResult remove(String deptCode) {
         DepartmentEntity departmentEntity = iDepartmentService.findByDeptCode(deptCode);
-        if(departmentEntity.getStatus()==StatusConstants.CAN_NOT_DELETE){
+        if(departmentEntity.getDataType()==StatusConstants.CAN_NOT_DELETE){
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
         }
         List<DepartmentEntity> departmentEntityList = iDepartmentService.childDept(deptCode, StatusConstants.DISABLE);

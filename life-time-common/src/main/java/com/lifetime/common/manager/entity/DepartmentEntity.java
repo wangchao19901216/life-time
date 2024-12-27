@@ -6,12 +6,15 @@ import com.lifetime.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 @TableName("LT_M_DEPARTMENT")
 public class DepartmentEntity extends BaseEntity {
 
     @ApiModelProperty(value = "部门编号",notes = "")
     @TableField("DEPARTMENT_CODE")
+    @NotEmpty(message = "部门编号不为空")
     private String departmentCode ;
 
     @ApiModelProperty(value = "部门名称")

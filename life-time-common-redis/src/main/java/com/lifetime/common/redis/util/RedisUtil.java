@@ -3,6 +3,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -24,6 +25,10 @@ public class RedisUtil {
 
     public RedisUtil(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
+    }
+
+    public void setSerializer() {
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     }
 
 
@@ -616,4 +621,9 @@ public class RedisUtil {
         return rStr.toString();
     }
 
+
+//    public <T> T getObjectFromRedis(String key, Class<T> type) {
+//        setSerializer(); // 设置序列化器
+//        return (T) redisTemplate.opsForValue().get(key);
+//    }
 }

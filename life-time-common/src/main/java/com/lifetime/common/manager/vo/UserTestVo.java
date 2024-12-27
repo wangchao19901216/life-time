@@ -1,7 +1,7 @@
 package com.lifetime.common.manager.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.lifetime.common.manager.entity.*;
+import com.lifetime.common.manager.entity.UserDetailEntity;
 import com.lifetime.common.model.AuthTokenModel;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +16,9 @@ import java.util.List;
  * @Version:1.0
  */
 @Data
-@Builder
-@JsonDeserialize
-public class UserVo implements Serializable {
+public class UserTestVo implements Serializable {
 
-     AuthTokenModel authToken;
-     UserDetailEntity userDetail;
-     List<DepartmentVo> departments;
-     String activeDept;
+     public String access_token;
+     public String activeDept;
+
 }

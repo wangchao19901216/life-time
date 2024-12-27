@@ -47,7 +47,7 @@ public class RoleBusiness {
         if (LtCommonUtil.isBlankOrNull(resultEntity)) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "未查到改字典，无法删除!");
         }
-        if(resultEntity.getStatus()== StatusConstants.CAN_NOT_DELETE){
+        if(resultEntity.getDataType()== StatusConstants.CAN_NOT_DELETE){
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
         }
         List<RoleEntity> childList = iRoleService.childEntity(resultEntity.getRoleCode());

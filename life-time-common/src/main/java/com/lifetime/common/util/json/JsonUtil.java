@@ -1,4 +1,4 @@
-package com.lifetime.common.json;
+package com.lifetime.common.util.json;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -16,7 +16,7 @@ import java.io.OutputStream;
  * 
  * @author wangchao
  */
-public class JSON
+public class JsonUtil
 {
     public static final String DEFAULT_FAIL = "\"Parse failed\"";
     private static final ObjectMapper objectMapper = new ObjectMapper();

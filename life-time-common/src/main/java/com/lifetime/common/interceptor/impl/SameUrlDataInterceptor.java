@@ -2,7 +2,7 @@ package com.lifetime.common.interceptor.impl;
 
 import com.lifetime.common.annotation.RepeatSubmit;
 import com.lifetime.common.interceptor.RepeatSubmitInterceptor;
-import com.lifetime.common.json.JSON;
+import com.lifetime.common.util.json.JsonUtil;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
     @Override
     public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation) throws Exception {
         // 本次参数及系统时间
-        String nowParams = JSON.marshal(request.getParameterMap());
+        String nowParams = JsonUtil.marshal(request.getParameterMap());
         Map<String, Object> nowDataMap = new HashMap<String, Object>();
         nowDataMap.put(REPEAT_PARAMS, nowParams);
         nowDataMap.put(REPEAT_TIME, System.currentTimeMillis());

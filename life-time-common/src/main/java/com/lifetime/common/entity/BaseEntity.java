@@ -30,6 +30,10 @@ public class BaseEntity implements Serializable {
     public Integer sort=1 ;
     @ApiModelProperty(value = "状态")
     public Integer status=1;
+
+    @ApiModelProperty(value = "数据类型,1-业务，-1-系统")
+    @TableField(value = "data_type")
+    public Integer dataType=1;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_time",fill = FieldFill.INSERT)
     public Date createTime;

@@ -148,29 +148,78 @@ public class UserController {
             return ResponseResult.error(CommonExceptionEnum.DATA_SEARCH_FAILED, exception.getMessage());
         }
     }
+    @PostMapping("role/full")
+    @ApiOperation(value = "用户角色(全量)", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult bindUserRole(@Validated @RequestBody List<UserRoleEntity> list) {
+        try {
+            return  userBusiness.bindUserRole(list);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
 
-    @PostMapping("role/{userCode}")
+    @PostMapping("role")
     @ApiOperation(value = "用户角色", notes = "")
     @PreAuthorize("hasAuthority('all')")
-    public ResponseResult bindUserRole(@Validated @RequestBody List<UserRoleEntity> list,@PathVariable String userCode) {
+    public ResponseResult saveUserRole(@Validated @RequestBody List<UserRoleEntity> list) {
         try {
-            return  userBusiness.bindUserRole(userCode,userCode,list);
+            return  userBusiness.saveUserRole(list);
         }
         catch (Exception exception){
             return ResponseResult.error(500,exception.getMessage());
         }
     }
 
-    @PostMapping("department/{userCode}")
-    @ApiOperation(value = "用户部门", notes = "")
+
+    @DeleteMapping("role/{id}")
+    @ApiOperation(value = "用户角色", notes = "")
     @PreAuthorize("hasAuthority('all')")
-    public ResponseResult save(@Validated @RequestBody ValidatedList<UserDepartmentEntity> list, @PathVariable String userCode) {
+    public ResponseResult removeUserRole(@PathVariable BigInteger id) {
         try {
-            return  userBusiness.bindUserDept(userCode,list);
+            return  userBusiness.removeUserRole(id);
         }
         catch (Exception exception){
             return ResponseResult.error(500,exception.getMessage());
         }
     }
+
+    @PostMapping("department/full")
+    @ApiOperation(value = "用户部门(全量)", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult save(@Validated @RequestBody ValidatedList<UserDepartmentEntity> list) {
+        try {
+            return  userBusiness.bindUserDept(list);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("department")
+    @ApiOperation(value = "用户部门", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult saveUserDept(@Validated @RequestBody ValidatedList<UserDepartmentEntity> list) {
+        try {
+            return  userBusiness.saveUserDept(list);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+    @DeleteMapping("department/{id}")
+    @ApiOperation(value = "用户部门", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult removeUserDept(@PathVariable BigInteger id) {
+        try {
+            return  userBusiness.removeUserDept(id);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
 
 }

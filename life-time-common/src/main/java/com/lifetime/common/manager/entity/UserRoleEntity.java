@@ -25,4 +25,8 @@ public class UserRoleEntity extends BaseEntity  {
     @ApiModelProperty(name="角色编码")
     @TableField("ROLE_CODE")
     public String roleCode;
+
+    @ApiModelProperty(name="角色归属部门")
+    @TableField("ROLE_DEPT")
+    public String roleDept;
 }
