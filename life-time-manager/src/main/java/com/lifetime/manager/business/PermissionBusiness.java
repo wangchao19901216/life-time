@@ -55,6 +55,7 @@ public class PermissionBusiness {
         permissionEntity.setPermissionId(permissionId);
         permissionEntity.setId(null);
         list.add(permissionEntity);
+
         //按钮权限
         if(LtCommonUtil.isNotBlankOrNull(permissionRequestModel.getButtons())&&permissionRequestModel.getButtons().size()>0){
             for(PermissionEntity permission:permissionRequestModel.getButtons()){
