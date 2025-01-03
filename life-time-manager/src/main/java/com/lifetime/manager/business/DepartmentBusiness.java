@@ -8,8 +8,10 @@ import com.lifetime.common.enums.PermissionTypeEnum;
 import com.lifetime.common.manager.entity.CodeEntity;
 import com.lifetime.common.manager.entity.DepartmentEntity;
 import com.lifetime.common.manager.entity.PermissionEntity;
+import com.lifetime.common.manager.entity.UserDepartmentEntity;
 import com.lifetime.common.manager.service.IDepartmentService;
 import com.lifetime.common.manager.service.IPermissionService;
+import com.lifetime.common.manager.service.IUserDepartmentService;
 import com.lifetime.common.model.TreeModel;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
@@ -39,7 +41,10 @@ public class DepartmentBusiness {
     @Autowired
     IDepartmentService iDepartmentService;
 
-    public ResponseResult save(@Validated DepartmentEntity  departmentEntity) {
+    @Autowired
+    IUserDepartmentService iUserDepartmentService;
+
+    public ResponseResult save(@Validated DepartmentEntity departmentEntity) {
         DepartmentEntity resultEntity = iDepartmentService.findByDeptCode(departmentEntity.getDepartmentCode());
         if (LtCommonUtil.isNotBlankOrNull(resultEntity)) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "编号已经存在");
@@ -51,16 +56,18 @@ public class DepartmentBusiness {
 
     public ResponseResult remove(String deptCode) {
         DepartmentEntity departmentEntity = iDepartmentService.findByDeptCode(deptCode);
-        if(departmentEntity.getDataType()==StatusConstants.CAN_NOT_DELETE){
+        if (departmentEntity.getDataType() == StatusConstants.CAN_NOT_DELETE) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED_DEFAULT);
         }
         List<DepartmentEntity> departmentEntityList = iDepartmentService.childDept(deptCode, StatusConstants.DISABLE);
         if (departmentEntityList.size() > 0)
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在子部门，无法删除!");
-        else {
-            iDepartmentService.removeById(departmentEntity.getId());
-            return ResponseResult.success(ResponseResultConstants.SUCCESS);
-        }
+        List<UserDepartmentEntity> userDepartmentEntityList = iUserDepartmentService.findByDeptCode(deptCode);
+        if (userDepartmentEntityList.size() > 0)
+            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在用户，无法删除!");
+        iDepartmentService.removeById(departmentEntity.getId());
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+
     }
 
     public ResponseResult update(String deptCode, DepartmentEntity departmentEntity) {
@@ -74,39 +81,40 @@ public class DepartmentBusiness {
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
         }
     }
+
     public ResponseResult search(SearchRequest searchRequest) {
         return ResponseResult.success(iDepartmentService.searchList(searchRequest));
     }
 
     public ResponseResult getTree(SearchRequest searchRequest) {
-        searchRequest.pageParams.pageSize=-1;//树型默认查所有
+        searchRequest.pageParams.pageSize = -1;//树型默认查所有
         SearchResponse<DepartmentEntity> searchResponse = iDepartmentService.searchList(searchRequest);
         List<DepartmentEntity> resultList = searchResponse.results;
         List<TreeModel> treeModelList = new ArrayList<>();
 
         List<DepartmentEntity> rootList = resultList.stream().filter(e -> e.getDepartmentParentCode().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());
 
-        for(DepartmentEntity entity:rootList){
-            TreeModel treeModel=new TreeModel();
+        for (DepartmentEntity entity : rootList) {
+            TreeModel treeModel = new TreeModel();
             treeModel.setCode(entity.getDepartmentCode());
             treeModel.setName(entity.getDepartmentName());
             treeModel.setType(entity.getDepartmentType());
             treeModel.setNote(entity.getRemark());
             treeModel.setId(entity.getId());
-            List<TreeModel> recursiveList= recursive(treeModel,resultList);
+            List<TreeModel> recursiveList = recursive(treeModel, resultList);
             treeModel.setChild(recursiveList);
             treeModelList.add(treeModel);
         }
         return ResponseResult.success(treeModelList);
     }
 
-    public List<TreeModel> recursive(TreeModel treeModel,List<DepartmentEntity> list){
+    public List<TreeModel> recursive(TreeModel treeModel, List<DepartmentEntity> list) {
 
-        List<DepartmentEntity> chidList=list.stream().filter(e->e.getDepartmentParentCode().toString().equals(treeModel.getCode())).collect(Collectors.toList());
-        List<TreeModel> chidTreeModelList=new ArrayList<>();
-        if(chidList.size()>0){
-            for(DepartmentEntity entity:chidList){
-                TreeModel model=new TreeModel();
+        List<DepartmentEntity> chidList = list.stream().filter(e -> e.getDepartmentParentCode().toString().equals(treeModel.getCode())).collect(Collectors.toList());
+        List<TreeModel> chidTreeModelList = new ArrayList<>();
+        if (chidList.size() > 0) {
+            for (DepartmentEntity entity : chidList) {
+                TreeModel model = new TreeModel();
                 model.setCode(entity.getDepartmentCode());
                 model.setType(entity.getDepartmentType());
                 model.setName(entity.getDepartmentName());
@@ -116,17 +124,15 @@ public class DepartmentBusiness {
                 chidTreeModelList.add(model);
             }
 
-            for(TreeModel model:chidTreeModelList){
-                List<TreeModel> recursiveList=recursive(model,list);
+            for (TreeModel model : chidTreeModelList) {
+                List<TreeModel> recursiveList = recursive(model, list);
                 model.setChild(recursiveList);
             }
-            return  chidTreeModelList;
-        }
-        else{
+            return chidTreeModelList;
+        } else {
             return null;
         }
     }
-
 
 
 }
