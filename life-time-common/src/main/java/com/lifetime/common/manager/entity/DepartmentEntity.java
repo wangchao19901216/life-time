@@ -61,5 +61,9 @@ public class DepartmentEntity extends BaseEntity {
     @TableField("HOME_URL")
     private String homeUrl;
 
+    @ApiModelProperty(value = "部门角色")
+    @TableField("DEPARTMENT_ROLES")
+    private String departmentRoles;
+
 
 }

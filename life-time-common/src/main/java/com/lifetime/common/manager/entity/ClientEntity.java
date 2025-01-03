@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 
@@ -24,7 +25,7 @@ public class ClientEntity implements Serializable {
     @TableId(type= IdType.ASSIGN_ID)
     @ApiModelProperty(value="客户端ID",required = true)
     @TableField("client_id")
-   // @NotEmpty(message = "clientId客户端ID不为空")
+    @NotEmpty(message = "clientId客户端ID不为空")
     public String clientId;
 
    // @NotEmpty(message = "clientSecret客户端密码不为空")

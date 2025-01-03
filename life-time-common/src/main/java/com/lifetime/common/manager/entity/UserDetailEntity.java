@@ -33,12 +33,13 @@ public class UserDetailEntity extends BaseEntity  {
     @ApiModelProperty(name = "头像",notes = "")
     @TableField("AVATAR")
     public String avatar ;
-    @PrivacyEncrypt(type = PrivacyTypeEnum.ID_CARD)
+   // @PrivacyEncrypt(type = PrivacyTypeEnum.ID_CARD)
     @ApiModelProperty(name = "身份证号",notes = "")
     public String idCard ;
 
     @ApiModelProperty(name = "性别",notes = "")
-    public Integer sex ;
+    @TableField("SEX")
+    public Integer sex=0 ;
 
     @ApiModelProperty(name = "邮箱",notes = "")
     public String email ;

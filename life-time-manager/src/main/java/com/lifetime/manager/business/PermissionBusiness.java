@@ -14,6 +14,7 @@ import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.response.SearchResponse;
 import com.lifetime.common.util.LtCommonUtil;
 import com.lifetime.common.util.LtModelUtil;
+import com.lifetime.common.util.SnowflakeIdWorker;
 import com.lifetime.common.util.SnowflakeUtil;
 import com.lifetime.manager.model.PermissionRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,12 @@ public class PermissionBusiness {
             iPermissionService.save(permissionEntity);
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
         }
-
     }
 
     public ResponseResult saveWithButton(PermissionRequestModel permissionRequestModel) {
+        SnowflakeIdWorker snowflakeIdWorker=new SnowflakeIdWorker(0,0);
         List<PermissionEntity> list=new ArrayList<>();
-        String permissionId= String.valueOf(SnowflakeUtil.nextLongId());
+        String permissionId= String.valueOf(snowflakeIdWorker.nextId());
         PermissionEntity permissionEntity=permissionRequestModel.getPermission();
         permissionEntity.setPermissionId(permissionId);
         permissionEntity.setId(null);
@@ -59,7 +60,7 @@ public class PermissionBusiness {
             for(PermissionEntity permission:permissionRequestModel.getButtons()){
                 PermissionEntity entity=LtModelUtil.copyTo(permission,PermissionEntity.class);
                 entity.setId(null);
-                entity.setPermissionId(String.valueOf(SnowflakeUtil.nextLongId()));
+                entity.setPermissionId(String.valueOf(snowflakeIdWorker.nextId()));
                 entity.setParentId(permissionId);
                 entity.setType(PermissionTypeEnum.Button.getCode());
                 list.add(entity);

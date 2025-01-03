@@ -3,6 +3,8 @@ package com.lifetime.common.manager.service;
 import com.lifetime.common.manager.entity.UserEntity;
 import com.lifetime.common.service.BaseService;
 
+import java.util.List;
+
 /**
  * @author:wangchao
  * @date: 2024/12/17-11:39
@@ -12,6 +14,7 @@ import com.lifetime.common.service.BaseService;
 public interface IUserService extends BaseService<UserEntity> {
     UserEntity findByUserCode(String userCode);
     UserEntity findByMobile(String mobile);
+
     Integer updatePassword(String userCode, String pw);
     Integer updateStatus(String userCode, Integer status);
 

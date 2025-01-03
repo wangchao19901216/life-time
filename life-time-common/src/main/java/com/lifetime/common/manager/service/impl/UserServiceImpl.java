@@ -1,6 +1,7 @@
 package com.lifetime.common.manager.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lifetime.common.manager.dao.UserDetailMapper;
 import com.lifetime.common.manager.entity.UserDetailEntity;

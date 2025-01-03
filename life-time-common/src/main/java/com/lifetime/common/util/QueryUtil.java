@@ -104,8 +104,9 @@ public class QueryUtil<T> {
         myQuery.setPage(page);
         myQuery.setQueryWrapper(queryWrapper);
         return myQuery;
-
     }
+
+
 
     public static  List<String>  exchange(List<String> sources,Class tClass){
         List<String> target=new ArrayList<>();

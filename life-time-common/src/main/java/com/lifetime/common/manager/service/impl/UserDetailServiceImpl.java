@@ -1,6 +1,8 @@
 package com.lifetime.common.manager.service.impl;
 
+import cn.hutool.db.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lifetime.common.manager.dao.UserDetailMapper;
 import com.lifetime.common.manager.dao.UserMapper;
@@ -53,6 +55,17 @@ public class UserDetailServiceImpl extends ServiceImpl<UserDetailMapper, UserDet
             return userEntity;
         }
         return null;
+    }
+
+    @Override
+    public SearchResponse<UserDetailEntity> findByDept(SearchRequest searchRequest,String deptCode) {
+        QueryModel<UserDetailEntity> myQuery = QueryUtil.buildMyQuery(searchRequest,UserDetailEntity.class);
+        SearchResponse<UserDetailEntity> searchResponse=new SearchResponse<>();
+        searchResponse.pageInfo = searchRequest.pageParams;
+        IPage<UserDetailEntity> iPage=userDetailMapper.getUserByDeptCode(myQuery.getPage(),deptCode);
+        searchResponse.results = iPage.getRecords();
+        searchResponse.pageInfo.total = (int) iPage.getTotal();
+        return searchResponse;
     }
 
     @Override

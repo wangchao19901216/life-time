@@ -6,6 +6,7 @@ import com.lifetime.common.manager.entity.UserDepartmentEntity;
 import com.lifetime.common.manager.entity.UserDetailEntity;
 import com.lifetime.common.manager.entity.UserRoleEntity;
 import com.lifetime.common.response.ResponseResult;
+import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.service.ValidatedList;
 import com.lifetime.manager.business.UserBusiness;
 import com.lifetime.manager.model.UserLoginRequestModel;
@@ -83,13 +84,24 @@ public class UserController {
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult save(@Validated @RequestBody UserRequestModel userRequestModel) {
        try {
-           return  userBusiness.add(userRequestModel);
+           return  userBusiness.add("",userRequestModel);
        }
        catch (Exception exception){
            return ResponseResult.error(500,exception.getMessage());
        }
     }
 
+    @PostMapping("/{departmentCode}")
+    @ApiOperation(value = "新增部门用户", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult save(@PathVariable String departmentCode,@Validated @RequestBody UserRequestModel userRequestModel) {
+        try {
+            return  userBusiness.add(departmentCode,userRequestModel);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
 
     @PutMapping("{userCode}")
     @ApiOperation(value = "修改", notes = "")
@@ -160,6 +172,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("role/{userCode}/{deptCode}")
+    @ApiOperation(value = "用户角色", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult searchUserRole(@PathVariable String  userCode,@PathVariable String deptCode) {
+        try {
+            return  userBusiness.searchUserRole(userCode,deptCode);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
     @PostMapping("role")
     @ApiOperation(value = "用户角色", notes = "")
     @PreAuthorize("hasAuthority('all')")
@@ -221,5 +245,38 @@ public class UserController {
         }
     }
 
+
+    @GetMapping("department/{userCode}")
+    @ApiOperation(value = "用户部门", notes = "")
+    @PreAuthorize("hasAuthority('all')")
+    public ResponseResult searchUserDept(@PathVariable String  userCode) {
+        try {
+            return  userBusiness.searchUserDept(userCode);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("/search/{deptCode}")
+    @ApiOperation(value = "查询(部门)")
+    public ResponseResult searchByDepart(@PathVariable String deptCode,@RequestBody SearchRequest searchRequest) {
+        try {
+            return  userBusiness.searchByDepart(searchRequest,deptCode);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
+
+    @PostMapping("/search")
+    @ApiOperation(value = "查询")
+    public ResponseResult searchList(@RequestBody SearchRequest searchRequest) {
+        try {
+            return  userBusiness.search(searchRequest);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
 
 }

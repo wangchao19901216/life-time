@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.lifetime.common.annotation.PrivacyEncrypt;
 import com.lifetime.common.enums.PrivacyTypeEnum;
+import com.lifetime.common.util.LtCommonUtil;
 import com.lifetime.common.util.PrivacyUtil;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,8 @@ public class PrivacySerializer extends JsonSerializer<String> implements Context
     @Override
     public void serialize(final String origin, final JsonGenerator jsonGenerator,
                           final SerializerProvider serializerProvider) throws IOException {
-        if (StringUtils.isNotBlank(origin) && null != privacyTypeEnum) {
+
+        if (LtCommonUtil.isNotBlankOrNull(origin) && null != privacyTypeEnum) {
             switch (privacyTypeEnum) {
                 case CUSTOMER:
                     jsonGenerator.writeString(PrivacyUtil.desValue(origin, prefixNoMaskLen, suffixNoMaskLen, symbol));
@@ -40,6 +42,7 @@ public class PrivacySerializer extends JsonSerializer<String> implements Context
                     jsonGenerator.writeString(PrivacyUtil.hideChineseName(origin));
                     break;
                 case ID_CARD:
+                    System.out.println(origin);
                     jsonGenerator.writeString(PrivacyUtil.hideIDCard(origin));
                     break;
                 case PHONE:

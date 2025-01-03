@@ -2,6 +2,7 @@ package com.lifetime.manager.business;
 
 import com.lifetime.common.constant.ResponseResultConstants;
 import com.lifetime.common.enums.CommonExceptionEnum;
+import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.util.json.JsonUtil;
 import com.lifetime.common.manager.entity.*;
 import com.lifetime.common.manager.service.*;
@@ -107,16 +108,11 @@ public class UserBusiness {
 
 
     public UserVo loginWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
-        try {
-            String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
-            AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
-            UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
-            redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
-            return userVo;
-        }
-        catch (Exception exception){
-            return null;
-        }
+        String LOGIN_REDIS_KEY = RedisConstants.LOGIN_USER + grant_type.toUpperCase() + ":" + userLoginRequestModel.userCode;
+        AuthTokenModel authTokenModel = getToken(grant_type, userLoginRequestModel);
+        UserVo userVo = buildUserVo(authTokenModel, userLoginRequestModel.userCode);
+        redisUtil.set(LOGIN_REDIS_KEY, userVo, Integer.valueOf(authTokenModel.expires_in));
+        return userVo;
     }
 
     public UserVo refreshTokenWithRedis(String grant_type, UserLoginRequestModel userLoginRequestModel) {
@@ -204,7 +200,7 @@ public class UserBusiness {
     }
 
     @Transactional
-    public ResponseResult add(UserRequestModel userRequestModel) {
+    public ResponseResult add(String deptCode,UserRequestModel userRequestModel){
         UserEntity resUser = iUserService.findByUserCode(userRequestModel.userCode);
         if (LtCommonUtil.isBlankOrNull(resUser)) {
             UserDetailEntity userDetail = LtModelUtil.copyTo(userRequestModel, UserDetailEntity.class);
@@ -215,11 +211,17 @@ public class UserBusiness {
             userEntity.setMobile(userRequestModel.getMobile());
             iUserService.save(userEntity);
             iUserDetailService.save(userDetail);
+            if(LtCommonUtil.isNotBlankOrNull(deptCode)){
+                UserDepartmentEntity userDepartmentEntity=new UserDepartmentEntity();
+                userDepartmentEntity.setUserCode(userRequestModel.getUserCode());
+                userDepartmentEntity.setDepartmentCode(deptCode);
+                userDepartmentEntity.setActiveDept(deptCode);
+                iUserDepartmentService.save(userDepartmentEntity);
+            }
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
         } else {
             return ResponseResult.error(CommonExceptionEnum.DATA_SAVE_FAILED.getCode(), CommonExceptionEnum.DATA_SAVE_FAILED.getMessage(), "用户已经存在");
         }
-
     }
 
     @Transactional
@@ -321,10 +323,17 @@ public class UserBusiness {
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
     }
     public ResponseResult saveUserRole(List<UserRoleEntity> requestList) {
-        return ResponseResult.success(iUserRoleService.saveBatch(requestList));
+        return ResponseResult.success(iUserRoleService.saveOrUpdateBatch(requestList));
     }
     public ResponseResult removeUserRole(BigInteger id) {
         return ResponseResult.success(iUserRoleService.removeById(id));
+    }
+
+
+    public ResponseResult searchUserRole(String userCode,String activeDept) {
+        //库里原始数据
+        List<UserRoleEntity> originalList = iUserRoleService.findByUserCode(userCode, activeDept);
+        return ResponseResult.success(originalList);
     }
 
 
@@ -363,14 +372,24 @@ public class UserBusiness {
     }
 
     public ResponseResult saveUserDept(List<UserDepartmentEntity> requestList) {
-        return ResponseResult.success(iUserDepartmentService.saveBatch(requestList));
+        return ResponseResult.success(iUserDepartmentService.saveOrUpdateBatch(requestList));
     }
     public ResponseResult removeUserDept(BigInteger id) {
         return ResponseResult.success(iUserDepartmentService.removeById(id));
     }
+    public ResponseResult searchUserDept(String userCode) {
+        //库里原始数据
+        List<UserDepartmentEntity> originalList = iUserDepartmentService.findByUserCode(userCode);
+        return ResponseResult.success(originalList);
+    }
 
 
-
+    public ResponseResult search(SearchRequest searchRequest) {
+        return ResponseResult.success(iUserDetailService.searchList(searchRequest));
+    }
+    public ResponseResult searchByDepart(SearchRequest searchRequest,String deptCode) {
+        return ResponseResult.success(iUserDetailService.findByDept(searchRequest,deptCode));
+    }
 
 
     public String getActiveDept(String userCode){
