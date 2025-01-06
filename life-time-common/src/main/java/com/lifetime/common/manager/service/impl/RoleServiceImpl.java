@@ -70,9 +70,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity> impleme
     }
 
     @Override
-    public List<RoleEntity> getByDept(String deptCode) {
+    public List<RoleEntity> getRoleTreeByDept(String deptCode) {
         DepartmentEntity departmentEntity=iDepartmentService.findByDeptCode(deptCode);
-        String roles=departmentEntity.getDepartmentRoles();
+        String roles=departmentEntity.getDepartmentRolesTree();
         LambdaQueryWrapper<RoleEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(RoleEntity::getRoleCode, roles.split(","));
         return mapper.selectList(queryWrapper);

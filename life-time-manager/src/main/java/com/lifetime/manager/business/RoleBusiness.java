@@ -122,9 +122,9 @@ public class RoleBusiness {
 
 
 
-    public ResponseResult getTreeByDept(String deptCode){
+    public ResponseResult getRoleTreeByDept(String deptCode){
 
-        List<RoleEntity> resultList = iRoleService.getByDept(deptCode);
+        List<RoleEntity> resultList = iRoleService.getRoleTreeByDept(deptCode);
         List<TreeModel> treeModelList = new ArrayList<>();
 
         List<RoleEntity> rootList = resultList.stream().filter(e -> e.getRoleParentCode().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());

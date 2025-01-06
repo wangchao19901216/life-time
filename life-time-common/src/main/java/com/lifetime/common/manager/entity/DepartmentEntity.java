@@ -65,5 +65,9 @@ public class DepartmentEntity extends BaseEntity {
     @TableField("DEPARTMENT_ROLES")
     private String departmentRoles;
 
+    @ApiModelProperty(value = "部门角色树")
+    @TableField("DEPARTMENT_ROLES_TREE")
+    private String departmentRolesTree;
+
 
 }

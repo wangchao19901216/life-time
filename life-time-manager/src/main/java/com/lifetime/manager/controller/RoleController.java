@@ -90,7 +90,7 @@ public class RoleController {
     @ApiOperation(value = "查询部门角色-树型")
     public ResponseResult tree(@PathVariable String deptCode) {
         try {
-            return  roleBusiness.getTreeByDept(deptCode);
+            return  roleBusiness.getRoleTreeByDept(deptCode);
         } catch (Exception exception) {
             return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
         }
