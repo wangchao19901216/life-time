@@ -279,4 +279,17 @@ public class UserController {
         }
     }
 
+
+
+    @GetMapping("/active-dept/{userCode}/{deptCode}")
+    @ApiOperation(value = "设置用户当前使用部门", notes = "")
+    public ResponseResult setActiveDept(@PathVariable String  userCode,@PathVariable String deptCode) {
+        try {
+            return  userBusiness.setActiveDept(userCode,deptCode);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
 }

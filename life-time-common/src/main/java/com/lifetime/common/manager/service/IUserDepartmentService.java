@@ -17,4 +17,7 @@ public interface IUserDepartmentService extends BaseService<UserDepartmentEntity
     List<UserDepartmentEntity> findByUserCode(String userCode);
 
     List<UserDepartmentEntity> findByDeptCode(String deptCode);
+
+    boolean  setActiveDept(String deptCode,String userCode);
+
 }

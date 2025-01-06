@@ -13,6 +13,7 @@ logging:
 spring:
   main:
     allow-bean-definition-overriding: true
+    allow-circular-references: true
   datasource:
     username: root
     password: Wc8528932@123

@@ -53,13 +53,10 @@ public class BaseEntity implements Serializable {
     @TableField(value = "modifier_user_name",fill = FieldFill.INSERT_UPDATE)
     public String modifierUserName;
 
-    @TableField(value = "depart_code",fill = FieldFill.INSERT)
-    public String departCode;
+    @TableField(value = "opera_depart_code",fill = FieldFill.INSERT)
+    public String operaDeptCode;
 
-    @TableField(value = "depart_name",fill = FieldFill.INSERT)
-    public String departName;
-
-//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    private transient Map<String, Object> params;
+    @TableField(value = "opera_depart_name",fill = FieldFill.INSERT)
+    public String operaDeptName;
 
 }

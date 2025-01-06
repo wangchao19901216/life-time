@@ -2,13 +2,8 @@ package com.lifetime.common.manager.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.lifetime.common.manager.dao.UserDepartmentMapper;
-import com.lifetime.common.manager.dao.UserDetailMapper;
 import com.lifetime.common.manager.dao.UserRoleMapper;
-import com.lifetime.common.manager.entity.DepartmentEntity;
-import com.lifetime.common.manager.entity.UserDepartmentEntity;
 import com.lifetime.common.manager.entity.UserRoleEntity;
-import com.lifetime.common.manager.service.IUserDepartmentService;
 import com.lifetime.common.manager.service.IUserRoleService;
 import com.lifetime.common.model.QueryModel;
 import com.lifetime.common.response.SearchRequest;
@@ -41,7 +36,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRoleEnt
     public List<UserRoleEntity> findByUserCode(String userCode,String deptCode) {
         LambdaQueryWrapper<UserRoleEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserRoleEntity::getUserCode, userCode);
-        queryWrapper.eq(UserRoleEntity::getDepartCode, deptCode);
+        queryWrapper.eq(UserRoleEntity::getRoleDept, deptCode);
         queryWrapper.eq(UserRoleEntity::getStatus,1);
         return mapper.selectList(queryWrapper);
 

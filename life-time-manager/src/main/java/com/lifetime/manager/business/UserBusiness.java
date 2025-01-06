@@ -293,12 +293,12 @@ public class UserBusiness {
         List<UserRoleEntity> originalList = iUserRoleService.findByUserCode(userCode, activeDept);
         for (UserRoleEntity userRoleEntity : requestList) {
             if (LtCommonUtil.isNotBlankOrNull(userRoleEntity.getId())) {
-                userRoleEntity.setDepartCode(activeDept);
+                userRoleEntity.setRoleDept(activeDept);
                 list.add(userRoleEntity);
             } else {
                 UserRoleEntity entity = LtModelUtil.copyTo(userRoleEntity, UserRoleEntity.class);
                 entity.setId(BigInteger.valueOf(SnowflakeUtil.nextLongId()));
-                entity.setDepartCode(activeDept);
+                entity.setRoleDept(activeDept);
                 list.add(entity);
             }
         }
@@ -408,6 +408,10 @@ public class UserBusiness {
             }
         }
         return activeDept;
+    }
+
+    public ResponseResult setActiveDept(String deptCode,String userCode){
+          return  ResponseResult.success(iUserDepartmentService.setActiveDept(deptCode,userCode));
     }
 
 }

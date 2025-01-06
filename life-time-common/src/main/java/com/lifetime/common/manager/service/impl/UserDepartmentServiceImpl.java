@@ -48,4 +48,18 @@ public class UserDepartmentServiceImpl extends ServiceImpl<UserDepartmentMapper,
         queryWrapper.eq(UserDepartmentEntity::getDepartmentCode,deptCode);
         return mapper.selectList(queryWrapper);
     }
+
+    @Override
+    public boolean setActiveDept(String deptCode, String userCode) {
+        List<UserDepartmentEntity> list=findByUserCode(userCode);
+        for(UserDepartmentEntity entity:list){
+            if(entity.getDepartmentCode().equals(deptCode)){
+                entity.setActiveDept("1");
+            }
+            else{
+                entity.setActiveDept("1");
+            }
+        }
+        return super.updateBatchById(list);
+    }
 }

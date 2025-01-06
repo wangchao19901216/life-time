@@ -9,9 +9,14 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.lifetime.*")
-@MapperScan(basePackages = {"com.lifetime.common.manager.dao","com.lifetime.common.mapper"})
 @EnableEurekaClient
 @EnableOpenApi
+@MapperScan(basePackages = {"com.lifetime.common.manager.dao",
+        "com.lifetime.common.mapper",
+        "com.lifetime.common.dataSource.driver",
+        "com.lifetime.common.dataSource.driver.jdbc",
+        "com.lifetime.common.dataSource.dao",
+        "com.lifetime.common.dataSource.mapper"})
 public class securityApplication
 {
     public static void main(String[] args) {
