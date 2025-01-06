@@ -37,9 +37,7 @@ public class UserDepartmentServiceImpl extends ServiceImpl<UserDepartmentMapper,
 
     @Override
     public List<UserDepartmentEntity> findByUserCode(String userCode) {
-        LambdaQueryWrapper<UserDepartmentEntity> queryWrapper=new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserDepartmentEntity::getUserCode,userCode);
-        return mapper.selectList(queryWrapper);
+        return  mapper.getUserDepartmentByUserCode(userCode);
     }
 
     @Override

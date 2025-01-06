@@ -337,8 +337,6 @@ public class UserBusiness {
     }
 
 
-
-
     @Transactional
     public ResponseResult bindUserDept(List<UserDepartmentEntity> requestList) {
         List<UserDepartmentEntity> list = new ArrayList<>();

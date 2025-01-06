@@ -28,6 +28,10 @@ public class UserDepartmentEntity extends BaseEntity  {
     @NotEmpty(message="部门编码不能为空")
     public String departmentCode;
 
+    @ApiModelProperty(name="部门名称")
+    @TableField("DEPARTMENT_NAME")
+    public transient String departmentName;
+
 
     @ApiModelProperty(name="是否当前用户部门(用户多部门切换)")
     @TableField("ACTIVE_DEPARTMENT")

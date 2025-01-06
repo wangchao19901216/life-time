@@ -247,7 +247,7 @@ public class UserController {
 
 
     @GetMapping("department/{userCode}")
-    @ApiOperation(value = "用户部门", notes = "")
+    @ApiOperation(value = "用户所属部门", notes = "")
     @PreAuthorize("hasAuthority('all')")
     public ResponseResult searchUserDept(@PathVariable String  userCode) {
         try {

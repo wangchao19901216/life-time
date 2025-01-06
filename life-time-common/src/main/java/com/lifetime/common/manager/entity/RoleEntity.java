@@ -43,6 +43,13 @@ public class RoleEntity extends BaseEntity implements Serializable {
     @Lob
     public String permissions;
 
+
+    @ApiModelProperty(value="权限集合树")
+    @TableField("PERMISSION_TREE")
+    @Lob
+    public String permissionTree;
+
+
     @ApiModelProperty(value="数据权限(1=所有数据权限,2=自定义数据权限,3=本部门数据权限,4=本部门及以下数据权限,5=仅本人数据权限)")
     @TableField("DATA_SCOPE")
     public String dataScope;
