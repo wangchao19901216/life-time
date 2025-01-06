@@ -119,4 +119,26 @@ public class RoleBusiness {
             return null;
         }
     }
+
+
+
+    public ResponseResult getTreeByDept(String deptCode){
+
+        List<RoleEntity> resultList = iRoleService.getByDept(deptCode);
+        List<TreeModel> treeModelList = new ArrayList<>();
+
+        List<RoleEntity> rootList = resultList.stream().filter(e -> e.getRoleParentCode().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());
+
+        for(RoleEntity entity:rootList){
+            TreeModel treeModel=new TreeModel();
+            treeModel.setCode(entity.getRoleCode());
+            treeModel.setName(entity.getRoleName());
+            treeModel.setNote(entity.getRemark());
+            treeModel.setId(entity.getId());
+            List<TreeModel> recursiveList= recursive(treeModel,resultList);
+            treeModel.setChild(recursiveList);
+            treeModelList.add(treeModel);
+        }
+        return ResponseResult.success(treeModelList);
+    }
 }

@@ -18,4 +18,7 @@ public interface IRoleService extends BaseService<RoleEntity> {
     boolean isExist(String roleCode);
     RoleEntity findByRoleCode(String roleCode);
     List<RoleEntity> childEntity(String roleCode);
+
+
+    List<RoleEntity> getByDept(String deptCode);
 }

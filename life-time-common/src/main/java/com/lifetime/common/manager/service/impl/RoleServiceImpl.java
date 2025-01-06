@@ -4,10 +4,13 @@ package com.lifetime.common.manager.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lifetime.common.manager.dao.CodeMapper;
+import com.lifetime.common.manager.dao.DepartmentMapper;
 import com.lifetime.common.manager.dao.RoleMapper;
 import com.lifetime.common.manager.entity.CodeEntity;
+import com.lifetime.common.manager.entity.DepartmentEntity;
 import com.lifetime.common.manager.entity.RoleEntity;
 import com.lifetime.common.manager.service.ICodeService;
+import com.lifetime.common.manager.service.IDepartmentService;
 import com.lifetime.common.manager.service.IRoleService;
 import com.lifetime.common.model.QueryModel;
 import com.lifetime.common.response.SearchRequest;
@@ -29,6 +32,9 @@ import java.util.List;
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity> implements IRoleService {
     @Autowired
     RoleMapper  mapper;
+
+    @Autowired
+    IDepartmentService iDepartmentService;
 
 
     @Override
@@ -60,6 +66,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity> impleme
     public List<RoleEntity> childEntity(String roleCode) {
         LambdaQueryWrapper<RoleEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(RoleEntity::getRoleParentCode, roleCode);
+        return mapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<RoleEntity> getByDept(String deptCode) {
+        DepartmentEntity departmentEntity=iDepartmentService.findByDeptCode(deptCode);
+        String roles=departmentEntity.getDepartmentRoles();
+        LambdaQueryWrapper<RoleEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(RoleEntity::getRoleCode, roles.split(","));
         return mapper.selectList(queryWrapper);
     }
 }

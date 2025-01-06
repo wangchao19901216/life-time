@@ -145,6 +145,11 @@ public class PermissionBusiness {
 
     public PermissionRequestModel buildPermissionRequestModel(String permissionId){
         PermissionEntity permissionEntity=iPermissionService.findByPermissionId(permissionId);
+        //设置父节点名称
+        PermissionEntity parentEntity=iPermissionService.findByPermissionId(permissionEntity.getParentId());
+        permissionEntity.setParentName(parentEntity.getName());
+
+        //查询子节点
         List<PermissionEntity> permissionEntityList=iPermissionService.childPermission(permissionId, StatusConstants.DISABLE);
         List<PermissionEntity> buttons=permissionEntityList.stream().filter(e->e.getType().equals(PermissionTypeEnum.Button.getCode())).collect(Collectors.toList());
         return  PermissionRequestModel.builder()

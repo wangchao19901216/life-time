@@ -23,6 +23,8 @@ public class PermissionEntity extends BaseEntity {
     @TableField("PARENT_ID")
     private String parentId;
 
+    private transient  String parentName;
+
     @ApiModelProperty(value = "权限名称")
     private String name;
 
