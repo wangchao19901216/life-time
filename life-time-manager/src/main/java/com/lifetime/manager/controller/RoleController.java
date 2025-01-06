@@ -86,7 +86,7 @@ public class RoleController {
         }
     }
 
-    @PostMapping("/tree/{deptCode}")
+    @GetMapping("/tree/{deptCode}")
     @ApiOperation(value = "查询部门角色-树型")
     public ResponseResult tree(@PathVariable String deptCode) {
         try {
