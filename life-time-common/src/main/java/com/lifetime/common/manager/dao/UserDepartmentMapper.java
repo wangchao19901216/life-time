@@ -16,7 +16,6 @@ import java.util.List;
 @Mapper
 public interface UserDepartmentMapper  extends BaseDaoMapper<UserDepartmentEntity> {
 
-
     @Select("select A.*,B.DEPARTMENT_NAME from lt_m_user_department A left join lt_m_department B on A.DEPARTMENT_CODE=B.DEPARTMENT_CODE WHERE A.USER_CODE=#{userCode}")
     List<UserDepartmentEntity> getUserDepartmentByUserCode(String userCode);
 }

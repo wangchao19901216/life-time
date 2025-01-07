@@ -21,4 +21,6 @@ public interface IPermissionService extends BaseService<PermissionEntity> {
      * */
     List<PermissionEntity> childPermission(String permissionId,Integer flag);
 
+    List<PermissionEntity> getPermissionListByUserAndDept(String userCode,String dept);
+
 }

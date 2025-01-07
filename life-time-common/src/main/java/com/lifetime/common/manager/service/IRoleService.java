@@ -19,6 +19,7 @@ public interface IRoleService extends BaseService<RoleEntity> {
     RoleEntity findByRoleCode(String roleCode);
     List<RoleEntity> childEntity(String roleCode);
 
-
     List<RoleEntity> getRoleTreeByDept(String deptCode);
+
+    List<RoleEntity> getRolesByUserCodeAndDept(String userCode,String deptCode);
 }

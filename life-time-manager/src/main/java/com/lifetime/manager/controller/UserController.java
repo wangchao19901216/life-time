@@ -8,6 +8,7 @@ import com.lifetime.common.manager.entity.UserRoleEntity;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.service.ValidatedList;
+import com.lifetime.manager.business.PermissionBusiness;
 import com.lifetime.manager.business.UserBusiness;
 import com.lifetime.manager.model.UserLoginRequestModel;
 import com.lifetime.manager.model.UserRequestModel;
@@ -37,6 +38,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserBusiness  userBusiness;
+
+    @Autowired
+    PermissionBusiness permissionBusiness;
 
     @PostMapping("login/{grant_type}")
     @ApiOperation(value = "用户登陆")
@@ -291,5 +295,21 @@ public class UserController {
             return ResponseResult.error(500,exception.getMessage());
         }
     }
+
+
+
+    @GetMapping("/menu/{userCode}/{deptCode}")
+    @ApiOperation(value = "用户菜单", notes = "")
+    public ResponseResult getTreeByUserCodeAndDept(@PathVariable String  userCode,@PathVariable String deptCode) {
+        try {
+            return  permissionBusiness.getTreeByUserCodeAndDept(userCode,deptCode);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+
+
 
 }

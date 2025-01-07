@@ -17,6 +17,7 @@ import com.lifetime.common.util.LtModelUtil;
 import com.lifetime.common.util.SnowflakeIdWorker;
 import com.lifetime.common.util.SnowflakeUtil;
 import com.lifetime.manager.model.PermissionRequestModel;
+import com.lifetime.manager.model.PermissionTreeModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,6 +200,47 @@ public class PermissionBusiness {
 
             for(TreeModel model:chidTreeModelList){
                 List<TreeModel> recursiveList=recursive(model,list);
+                model.setChild(recursiveList);
+            }
+            return  chidTreeModelList;
+        }
+        else{
+            return null;
+        }
+    }
+
+
+
+    public ResponseResult getTreeByUserCodeAndDept(String userCode,String dept){
+
+        List<PermissionEntity> resultList = iPermissionService.getPermissionListByUserAndDept(userCode,dept);
+        List<PermissionTreeModel> treeModelList = new ArrayList<>();
+
+        List<PermissionEntity> rootList = resultList.stream().filter(e -> e.getParentId().equals(Constants.ROOT_VALUE)).collect(Collectors.toList());
+
+        for(PermissionEntity entity:rootList){
+            PermissionTreeModel treeModel=  LtModelUtil.copyTo(entity,PermissionTreeModel.class);
+            List<PermissionTreeModel> recursiveList= recursive_menu(treeModel,resultList);
+            treeModel.setChild(recursiveList);
+            treeModelList.add(treeModel);
+        }
+        return ResponseResult.success(treeModelList);
+
+    }
+
+
+
+    public List<PermissionTreeModel> recursive_menu(PermissionTreeModel permissionTreeModel, List<PermissionEntity> list){
+
+        List<PermissionEntity> chidList=list.stream().filter(e->e.getParentId().toString().equals(permissionTreeModel.getPermissionId())).collect(Collectors.toList());
+        List<PermissionTreeModel> chidTreeModelList=new ArrayList<>();
+        if(chidList.size()>0){
+            for(PermissionEntity entity:chidList){
+                PermissionTreeModel model=  LtModelUtil.copyTo(entity,PermissionTreeModel.class);
+                chidTreeModelList.add(model);
+            }
+            for(PermissionTreeModel model:chidTreeModelList){
+                List<PermissionTreeModel> recursiveList=recursive_menu(model,list);
                 model.setChild(recursiveList);
             }
             return  chidTreeModelList;

@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lifetime.common.constant.StatusConstants;
 import com.lifetime.common.manager.dao.PermissionMapper;
 import com.lifetime.common.manager.entity.PermissionEntity;
+import com.lifetime.common.manager.entity.RoleEntity;
 import com.lifetime.common.manager.entity.UserEntity;
 import com.lifetime.common.manager.service.IPermissionService;
+import com.lifetime.common.manager.service.IRoleService;
 import com.lifetime.common.model.QueryModel;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.response.SearchResponse;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName UserServiceImpl
@@ -26,6 +29,9 @@ import java.util.List;
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, PermissionEntity> implements IPermissionService {
     @Autowired
     PermissionMapper mapper;
+
+    @Autowired
+    IRoleService iRoleService;
 
     @Override
     public SearchResponse<PermissionEntity> searchList(SearchRequest searchRequest) {
@@ -52,6 +58,16 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         if(flag==StatusConstants.ENABLE){
             queryWrapper.eq(PermissionEntity::getStatus, StatusConstants.ENABLE);
         }
+        return mapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<PermissionEntity> getPermissionListByUserAndDept(String userCode, String dept) {
+        List<RoleEntity> list=iRoleService.getRolesByUserCodeAndDept(userCode,dept);
+        String permissions=list.stream().map(e->e.getPermissionTree()).collect(Collectors.joining(","));
+        LambdaQueryWrapper<PermissionEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(PermissionEntity::getPermissionId, permissions.split(","));
+        queryWrapper.eq(PermissionEntity::getStatus, StatusConstants.ENABLE);
         return mapper.selectList(queryWrapper);
     }
 }

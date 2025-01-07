@@ -77,4 +77,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleEntity> impleme
         queryWrapper.in(RoleEntity::getRoleCode, roles.split(","));
         return mapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<RoleEntity> getRolesByUserCodeAndDept(String userCode, String deptCode) {
+        return mapper.getRoleListByUserCodeAndDept(userCode,deptCode);
+    }
 }
