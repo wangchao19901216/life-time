@@ -33,6 +33,10 @@ public class CodeBusiness {
     ICodeService iCodeService;
 
     public ResponseResult save(CodeEntity codeEntity) {
+        //增加一级分类时，类型默认为当前编码
+        if(codeEntity.getCodeType().equals("-1")){
+            codeEntity.setCodeType(codeEntity.getCodeValue());
+        }
         if (iCodeService.isExist(codeEntity.getCodeType(),codeEntity.getCodeValue())) {
             return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "编号已经存在");
         } else {
