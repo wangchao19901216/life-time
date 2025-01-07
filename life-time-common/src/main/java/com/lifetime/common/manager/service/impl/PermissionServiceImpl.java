@@ -67,6 +67,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         String permissions=list.stream().map(e->e.getPermissionTree()).collect(Collectors.joining(","));
         LambdaQueryWrapper<PermissionEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(PermissionEntity::getPermissionId, permissions.split(","));
+        queryWrapper.ne(PermissionEntity::getType,"2");
         queryWrapper.eq(PermissionEntity::getStatus, StatusConstants.ENABLE);
         return mapper.selectList(queryWrapper);
     }
