@@ -45,6 +45,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         LambdaQueryWrapper<PermissionEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PermissionEntity::getPermissionId, permissionId);
         queryWrapper.eq(PermissionEntity::getStatus, 1);
+        queryWrapper.orderByDesc(PermissionEntity::getSort);
         List<PermissionEntity> permissionEntityList = mapper.selectList(queryWrapper);
         if(permissionEntityList.size()>0){
             return  permissionEntityList.get(0);
@@ -55,6 +56,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public List<PermissionEntity> childPermission(String permissionId,Integer flag) {
         LambdaQueryWrapper<PermissionEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PermissionEntity::getParentId, permissionId);
+        queryWrapper.orderByDesc(PermissionEntity::getSort);
         if(flag==StatusConstants.ENABLE){
             queryWrapper.eq(PermissionEntity::getStatus, StatusConstants.ENABLE);
         }
@@ -69,6 +71,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         queryWrapper.in(PermissionEntity::getPermissionId, permissions.split(","));
         queryWrapper.ne(PermissionEntity::getType,"2");
         queryWrapper.eq(PermissionEntity::getStatus, StatusConstants.ENABLE);
+        queryWrapper.orderByDesc(PermissionEntity::getSort);
         return mapper.selectList(queryWrapper);
     }
 }
