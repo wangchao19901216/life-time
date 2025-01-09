@@ -12,6 +12,7 @@ import com.lifetime.common.dataSource.service.IDataSourceService;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.util.LtCommonUtil;
+import com.lifetime.common.util.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -115,6 +116,13 @@ public class DataSourceBusiness {
     public ResponseResult testConnect(BigInteger id) {
         DataSourceEntity resultEntity = iLtDataSourceService.getById(id);
         return  ResponseResult.success(iLtDataSourceService.testConnection(resultEntity));
+    }
+    public ResponseResult testConnect(DataSourceEntity dataSource) {
+        if(LtCommonUtil.isBlankOrNull(dataSource.getId())){
+            SnowflakeIdWorker snowflakeIdWorker=new SnowflakeIdWorker(0,0);
+            dataSource.setId(BigInteger.valueOf(snowflakeIdWorker.nextId()));
+        }
+        return  ResponseResult.success(iLtDataSourceService.testConnection(dataSource));
     }
 
 

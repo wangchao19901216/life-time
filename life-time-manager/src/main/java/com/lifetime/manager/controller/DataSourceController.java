@@ -32,6 +32,7 @@ public class DataSourceController {
     DataSourceBusiness  dataSourceBusiness;
     @PostMapping("")
     @ApiOperation(value = "增加")
+    @RepeatSubmit()
     public ResponseResult save(@Validated @RequestBody DataSourceEntity entity) {
         try {
             return  dataSourceBusiness.save(entity);
@@ -53,7 +54,6 @@ public class DataSourceController {
     }
     @PutMapping("/{id}")
     @ApiOperation(value = "修改")
-    @RepeatSubmit()
     public ResponseResult update(@PathVariable BigInteger  id,@RequestBody DataSourceEntity entity) {
         try {
             return  dataSourceBusiness.update(id,entity);
@@ -63,12 +63,23 @@ public class DataSourceController {
         }
     }
 
-    @PostMapping("/connect/{id}")
+    @GetMapping("/connect/{id}")
     @ApiOperation(value = "链接")
-    @RepeatSubmit()
     public ResponseResult connect(@PathVariable BigInteger  id) {
         try {
             return  dataSourceBusiness.testConnect(id);
+        }
+        catch (Exception exception){
+            return ResponseResult.error(500,exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("/connect")
+    @ApiOperation(value = "链接")
+    public ResponseResult connect(@RequestBody DataSourceEntity  dataSourceEntity) {
+        try {
+            return  dataSourceBusiness.testConnect(dataSourceEntity);
         }
         catch (Exception exception){
             return ResponseResult.error(500,exception.getMessage());
