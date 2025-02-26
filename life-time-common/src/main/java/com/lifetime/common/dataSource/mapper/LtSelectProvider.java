@@ -1,5 +1,6 @@
 package com.lifetime.common.dataSource.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lifetime.common.constant.DataSourceConstants;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -49,7 +50,7 @@ public class LtSelectProvider {
      * @param params
      * @return
      */
-    public String executeQuery_Page(Map<String,Object> params) {
+    public String executeQuery_Page(Page<Object> page, Map<String,Object> params) {
         String sql = params.get(DataSourceConstants.BASE_SQL).toString();
         params.remove(DataSourceConstants.BASE_SQL);
         sql = this.addScript(sql);

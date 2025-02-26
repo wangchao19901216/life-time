@@ -1,5 +1,7 @@
 package com.lifetime.common.dataSource.spi;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+
 import java.util.List;
 
 /**
@@ -45,7 +47,7 @@ public interface IStatementMapper<T> extends LtMapper<T>{
      * @param pageSize
      * @return
      */
-    Object selectPage(String dataSourceId, String schema, String sql, Object params, int pageNum, int pageSize);
+    IPage<Object> selectPage(String dataSourceId, String schema, String sql, Object params, int pageNum, int pageSize);
 
     /**
      * 新增

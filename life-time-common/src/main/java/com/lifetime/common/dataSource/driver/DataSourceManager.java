@@ -8,10 +8,8 @@ import com.lifetime.common.dataSource.spi.IStatementMapper;
 import com.lifetime.common.exception.CommonException;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

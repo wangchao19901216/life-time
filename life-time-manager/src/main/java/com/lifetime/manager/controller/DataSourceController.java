@@ -14,6 +14,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author:wangchao
@@ -137,4 +139,34 @@ public class DataSourceController {
             return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
         }
     }
+
+
+    @PostMapping("/execute")
+    @ApiOperation(value = "执行sql")
+    public ResponseResult getTable() {
+        try {
+            String sql="select * from lt_m_codelist";
+            Map<String, Object> params=new HashMap<>();
+            return  dataSourceBusiness.execute("1874729894424907777","mysql","lift-time","select",sql,params);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("/execute/page")
+    @ApiOperation(value = "执行sql(分页)")
+    public ResponseResult executePage() {
+        try {
+            String sql="select * from lt_m_codelist";
+            Map<String, Object> params=new HashMap<>();
+            params.put("pageNum",1);
+            params.put("pageSize",10);
+
+            return  dataSourceBusiness.execute("1874729894424907777","dm","HOTLINE","select",sql,params);
+        } catch (Exception exception) {
+            return ResponseResult.error(CommonExceptionEnum.UNHANDLED_EXCEPTION,exception.getMessage());
+        }
+    }
+
 }

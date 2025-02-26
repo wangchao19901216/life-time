@@ -1,5 +1,7 @@
 package com.lifetime.common.dataSource.driver.jdbc;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lifetime.common.constant.DataSourceConstants;
 import com.lifetime.common.dataSource.config.JdbcDataSourceRouter;
 import com.lifetime.common.dataSource.mapper.DataHandleMapper;
@@ -42,48 +44,23 @@ public class JdbcStatementMapper implements IStatementMapper {
     }
 
     @Override
-    public  List<Map<String, Object>> selectList(String dataSourceId, String schema, String sql, Object params) {
-        // 列表默认查询15条
-//        ApiPageInfo  page= this.selectPage(dataSourceId, schema, sql, params, PAGE_NUM, PAGE_SIZE);
-//        return page.getList();
-        return  null;
+    public List<Map<String, Object>> selectList(String dataSourceId, String schema, String sql, Object params) {
+        Map<String, Object> paramsMap = this.setParams(dataSourceId, schema, sql, params);
+        return baseMapper.executeQuery(paramsMap);
     }
 
     @Override
-    public Object selectPage(String dataSourceId, String schema, String sql, Object params, int pageNum, int pageSize) {
-        // 判断是否是预览运行SQL
-//        String execType = null;
-//        List<Map<String, Object>> list = new ArrayList<>();
-//        try {
-//            Map<String, Object> paramsMap = this.setParams(dataSourceId, schema, sql, params);
-//            if (paramsMap.containsKey(DataSourceConstants.BASE_API_EXEC_TYPE)) {
-//                execType = paramsMap.get(DataSourceConstants.BASE_API_EXEC_TYPE).toString();
-//            }
-//            Object pageSetup = paramsMap.get(DataSourceConstants.PAGE_SETUP);
-//            int pageCount = pageSetup != null ? Integer.parseInt(pageSetup.toString()) : 0;
-//            // 判断是否分页
-//            if (0 != pageCount && !checkPage(sql)) {
-//                PageHelper.startPage(pageNum, pageSize);
-//            }
-//            list = baseMapper.executeQuery(paramsMap);
-//
-//        }
-//        catch (Exception e) {
-//            Throwable cause = e.getCause();
-//
-//            if (execType == null) {
-//                throw new CommonException(500, cause == null ? e.getMessage() : cause.getMessage());
-//            } else {
-//                Map<String, Object> errorMap = new HashMap<>();
-//                errorMap.put("执行异常", "SQL执行失败：" + cause == null ? e.getMessage() : cause.getMessage());
-//                list.add(errorMap);
-//            }
-//        } finally {
-//            PageHelper.clearPage();
-//            JdbcDataSourceRouter.remove();
-//        }
-//        return new ApiPageInfo<>(list, pageNum, pageSize);
-          return null;
+    public IPage<Map<String, Object>> selectPage(String dataSourceId, String schema, String sql, Object params, int pageNum, int pageSize) {
+        try {
+            Map<String, Object> paramsMap = this.setParams(dataSourceId, schema, sql, params);
+            Page page = new Page(2, 10);
+            IPage<Map<String, Object>> a = baseMapper.executeQuery_Page(page, paramsMap);
+            return a;
+        } catch (Exception e) {
+            throw new CommonException(ApiStatusEnum.API_SQL_ERROR.getCode(), ApiStatusEnum.API_SQL_ERROR.getMassage());
+        } finally {
+            JdbcDataSourceRouter.remove();
+        }
     }
 
     @Override
@@ -128,7 +105,6 @@ public class JdbcStatementMapper implements IStatementMapper {
     }
 
 
-
     /**
      * 设置请求参数
      *
@@ -149,7 +125,7 @@ public class JdbcStatementMapper implements IStatementMapper {
         // 设置线程数据源
         if (schema != null && !"".equals(schema)) {
             // dataSourceId:dataSourceType:schema
-            dataSourceId = dataSourceId + ":"+ dataSourceType + ":" + schema;
+            dataSourceId = dataSourceId + ":" + dataSourceType + ":" + schema;
         }
         JdbcDataSourceRouter.setDataSourceKey(dataSourceId);
         return paramsMap;
@@ -157,21 +133,22 @@ public class JdbcStatementMapper implements IStatementMapper {
 
     /**
      * 校验SQL是否包含分页
+     *
      * @param sql
      * @return
      */
-    private boolean checkPage(String sql){
+    private boolean checkPage(String sql) {
         // 匹配limit+ 数字的规则，mysql,tidb
         String mysql = "(?i)limit.*?\\d";
         // 匹配limit+ 数字的规则，postgres, sqlserver2012以上
         String postgres = "(?i)offset.*?\\d";
         // 匹配ROWNUM关键字分页，oracle
-        String oracle ="(?i)ROWNUM.*?\\d";
-        if (Pattern.compile(mysql).matcher(sql).find()){
+        String oracle = "(?i)ROWNUM.*?\\d";
+        if (Pattern.compile(mysql).matcher(sql).find()) {
             return true;
-        }else if(Pattern.compile(postgres).matcher(sql).find()){
+        } else if (Pattern.compile(postgres).matcher(sql).find()) {
             return true;
-        }else if(Pattern.compile(oracle).matcher(sql).find()){
+        } else if (Pattern.compile(oracle).matcher(sql).find()) {
             return true;
         }
         return false;

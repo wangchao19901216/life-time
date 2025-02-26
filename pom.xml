@@ -15,6 +15,7 @@
       <module>life-time-common-redis</module>
     <module>life-time-common-eureka</module>
     <module>life-time-common-gateway</module>
+    <module>life-time-api-hub</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -49,12 +50,12 @@
     <lombok.version>1.18.22</lombok.version>
     <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
     <!--数据库工具版本-->
-    <mybatisplus.version>3.5.3.1</mybatisplus.version>
+    <mybatisplus.version>3.5.3</mybatisplus.version>
     <commons-text.version>1.8</commons-text.version>
     <spring-boot.druid.version>1.2.22</spring-boot.druid.version>
     <pagehelper.boot.version>2.1.0</pagehelper.boot.version>
     <dm.version>18.0.0</dm.version>
-    <mysql.version>8.0.33</mysql.version>
+    <mysql.version>8.0.30</mysql.version>
     <jdbc.version>21.5.0.0</jdbc.version>
     <nls.version>21.5.0.0</nls.version>
     <sqlserver.version>11.2.1.jre8</sqlserver.version>
@@ -197,7 +198,11 @@
         <artifactId>clickhouse-jdbc</artifactId>
         <version>${clickhouse.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+        <version>3.5.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

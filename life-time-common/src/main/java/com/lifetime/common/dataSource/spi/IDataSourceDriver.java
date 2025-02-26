@@ -1,7 +1,6 @@
 package com.lifetime.common.dataSource.spi;
 
 import com.lifetime.common.dataSource.entity.DataSourceEntity;
-import org.springframework.stereotype.Component;
 
 /**
  * @author:wangchao

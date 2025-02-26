@@ -3,7 +3,6 @@ package com.lifetime.common.dataSource.spi;
 import com.lifetime.common.dataSource.model.ColumnModel;
 import com.lifetime.common.dataSource.model.SchemaModel;
 import com.lifetime.common.dataSource.model.TableModel;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

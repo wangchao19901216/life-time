@@ -72,7 +72,7 @@ public class PageParam<T> extends Page<T> {
         return isSearchCount;
     }
 
-    @Override
+
     @ApiParam(hidden = true)
     public boolean isSearchCount() {
         if (total < 0) {

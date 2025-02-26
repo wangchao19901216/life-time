@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author:wangchao
@@ -47,11 +48,6 @@ public class DataSourceBusiness {
         }
         iLtDataSourceService.removeById(id);
         return ResponseResult.success(ResponseResultConstants.SUCCESS);
-//        if (departmentEntityList.size() > 0)
-//            return ResponseResult.error(CommonExceptionEnum.DATA_DELETE_FAILED, "存在子部门，无法删除!");
-//        else {
-//
-//        }
     }
 
     public ResponseResult update(BigInteger id, DataSourceEntity entity) {
@@ -123,6 +119,9 @@ public class DataSourceBusiness {
             dataSource.setId(BigInteger.valueOf(snowflakeIdWorker.nextId()));
         }
         return  ResponseResult.success(iLtDataSourceService.testConnection(dataSource));
+    }
+    public  ResponseResult execute(String datasourceId, String datasourceType, String schema,String operateType, String sql, Map<String, Object> params){
+        return ResponseResult.success(iLtDataSourceService.execute(datasourceId,datasourceType,schema,operateType,sql,params)) ;
     }
 
 

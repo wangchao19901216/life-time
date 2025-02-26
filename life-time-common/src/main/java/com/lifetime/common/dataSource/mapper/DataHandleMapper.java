@@ -1,7 +1,9 @@
 package com.lifetime.common.dataSource.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lifetime.common.manager.entity.UserEntity;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.Map;
  * @Version:1.0
  */
 @Mapper
-public interface DataHandleMapper {
+public interface DataHandleMapper extends BaseMapper<UserEntity> {
     /**
      * 查询类SQL
      * @param params
@@ -25,7 +27,7 @@ public interface DataHandleMapper {
 
 
     @SelectProvider(type = LtSelectProvider.class, method = "executeQuery_Page")
-    IPage<Object> executeQuery_Page(Page<Object> page, Map<String, Object> params);
+    IPage<Map<String, Object>> executeQuery_Page(Page<Map<String, Object>> page, Map<String, Object> params);
     /**
      * 新增类SQL
      * @param params
@@ -33,13 +35,6 @@ public interface DataHandleMapper {
      */
     @InsertProvider(type = LtSelectProvider.class, method = "executeInsert")
     Integer executeInsert(Map<String, Object> params);
-
-
-    @Select("")
-    IPage<Object> Select();
-
-
-
 
     /**
      * 修改类SQL
