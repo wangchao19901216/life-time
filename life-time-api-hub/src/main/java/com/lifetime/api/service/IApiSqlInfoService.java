@@ -7,4 +7,5 @@ import com.lifetime.common.service.BaseService;
 public interface IApiSqlInfoService extends BaseService<ApiSqlInfoEntity> {
     boolean deleteByCode(String code);
     ApiSqlInfoEntity getByApiCode(String apiCode);
+
 }

@@ -30,6 +30,11 @@ public class ApiSqlInfoEntity extends BaseEntity {
     @TableField("DATA_SOURCE_ID")
     private String dataSourceId;
 
+    @ApiModelProperty(value = "数据源类型")
+    @TableField("DATA_SOURCE_TYPE")
+    private String dataSourceType;
+
+
     @ApiModelProperty(value = "数据库schema")
     @TableField("SCHEMA_NAME")
     private String schemaName;

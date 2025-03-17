@@ -1,12 +1,15 @@
 package com.lifetime.api.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.lifetime.common.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.Date;
 
 
 /**
@@ -67,6 +70,11 @@ public class ApiBaseInfoEntity extends BaseEntity {
     @ApiModelProperty(value = "是否发布")
     @TableField("IS_PUBLISH")
     private String isPublish;
+
+    @ApiModelProperty(value = "发布时间")
+    @TableField("RELEASE_TIME")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date releaseTime;
     @ApiModelProperty(value = "是否分页")
     @TableField("IS_PAGE")
     private String isPage;

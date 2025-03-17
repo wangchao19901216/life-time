@@ -32,7 +32,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, AppEntity> implements
     @Override
     public List<AppEntity> getByApiCode(String code) {
         LambdaQueryWrapper<AppEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AppEntity::getApiCodes, code);
+        queryWrapper.like(AppEntity::getApiCodes, code);
         return mapper.selectList(queryWrapper);
     }
 }

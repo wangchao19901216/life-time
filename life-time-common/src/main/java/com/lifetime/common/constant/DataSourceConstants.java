@@ -35,7 +35,7 @@ public class DataSourceConstants {
     /**
      * 页码
      */
-    public final static String PAGE_NUM = "pageNum";
+    public final static String PAGE_INDEX = "pageIndex";
 
     /**
      * 每页大小

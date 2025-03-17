@@ -101,10 +101,7 @@ public class ApiGroupBusiness {
     public List<TreeModel> recursive(TreeModel treeModel,List<ApiGroupEntity> list){
 
         List<ApiGroupEntity> chidList=list.stream().filter(e->e.getParentCode().toString().equals(treeModel.getCode())).collect(Collectors.toList());
-        if(treeModel.getType().equals(Constants.ROOT_VALUE)){
-            //根结点不判断类型
-            chidList=list.stream().filter(e->e.getParentCode().toString().equals(treeModel.getCode())).collect(Collectors.toList());
-        }
+
         List<TreeModel> chidTreeModelList=new ArrayList<>();
         if(chidList.size()>0){
             for(ApiGroupEntity entity:chidList){

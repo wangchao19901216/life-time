@@ -50,12 +50,12 @@ public class JdbcStatementMapper implements IStatementMapper {
     }
 
     @Override
-    public IPage<Map<String, Object>> selectPage(String dataSourceId, String schema, String sql, Object params, int pageNum, int pageSize) {
+    public IPage<Map<String, Object>> selectPage(String dataSourceId, String schema, String sql, Object params, int pageIndex, int pageSize) {
         try {
             Map<String, Object> paramsMap = this.setParams(dataSourceId, schema, sql, params);
-            Page page = new Page(2, 10);
-            IPage<Map<String, Object>> a = baseMapper.executeQuery_Page(page, paramsMap);
-            return a;
+            Page page = new Page(pageIndex, pageSize);
+            IPage<Map<String, Object>> result = baseMapper.executeQuery_Page(page,paramsMap );
+            return result;
         } catch (Exception e) {
             throw new CommonException(ApiStatusEnum.API_SQL_ERROR.getCode(), ApiStatusEnum.API_SQL_ERROR.getMassage());
         } finally {

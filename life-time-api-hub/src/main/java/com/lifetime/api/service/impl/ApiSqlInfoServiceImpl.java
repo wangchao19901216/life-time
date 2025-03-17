@@ -42,4 +42,6 @@ public class ApiSqlInfoServiceImpl extends ServiceImpl<ApiSqlInfoMapper, ApiSqlI
         List<ApiSqlInfoEntity> list= mapper.selectList(queryWrapper);
         return list.size()>0?list.get(0):null;
     }
+
+
 }

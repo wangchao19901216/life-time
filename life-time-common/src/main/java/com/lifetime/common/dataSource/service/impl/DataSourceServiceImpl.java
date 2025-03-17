@@ -60,13 +60,15 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         }else if("delete".equalsIgnoreCase(sqlType)){
             return statementMapper.delete(datasourceId, schema, sql, params);
         } else {
-            Object pageNum = params.get(DataSourceConstants.PAGE_NUM);
+            String pageSetUp=String.valueOf(params.get(DataSourceConstants.PAGE_SETUP));
+            Object pageIndex = params.get(DataSourceConstants.PAGE_INDEX);
             Object pageSize = params.get(DataSourceConstants.PAGE_SIZE);
-            if (pageNum != null && pageSize != null) {
-                return statementMapper.selectPage(datasourceId, schema, sql, params, Integer.parseInt(pageNum.toString()), Integer.parseInt(pageSize.toString()));
+            if (pageSetUp.equals("1") && pageIndex != null && pageSize != null) {
+                return statementMapper.selectPage(datasourceId, schema, sql, params, Integer.parseInt(pageIndex.toString()), Integer.parseInt(pageSize.toString()));
             } else {
                 return statementMapper.selectList(datasourceId, schema, sql, params);
             }
         }
     }
+
 }

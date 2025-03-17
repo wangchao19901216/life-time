@@ -5,6 +5,7 @@ import com.lifetime.common.constant.DataSourceConstants;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author:wangchao
@@ -53,6 +54,7 @@ public class LtSelectProvider {
     public String executeQuery_Page(Page<Object> page, Map<String,Object> params) {
         String sql = params.get(DataSourceConstants.BASE_SQL).toString();
         params.remove(DataSourceConstants.BASE_SQL);
+        sql= sql.replaceAll("\\{","{params.");
         sql = this.addScript(sql);
         return sql;
     }

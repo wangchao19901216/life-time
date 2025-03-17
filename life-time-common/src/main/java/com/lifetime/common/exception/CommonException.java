@@ -5,7 +5,7 @@ import com.lifetime.common.enums.CommonExceptionEnum;
 
 /**
  * @ClassName CommonException
- * @Author Liwx
+ * @Author 王超
  * 抛出异常
  */
 

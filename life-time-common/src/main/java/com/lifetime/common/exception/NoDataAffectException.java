@@ -14,7 +14,6 @@ public class NoDataAffectException extends RuntimeException {
     public NoDataAffectException() {
 
     }
-
     /**
      * 构造函数。
      *

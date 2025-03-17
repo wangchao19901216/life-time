@@ -27,7 +27,7 @@ public interface DataHandleMapper extends BaseMapper<UserEntity> {
 
 
     @SelectProvider(type = LtSelectProvider.class, method = "executeQuery_Page")
-    IPage<Map<String, Object>> executeQuery_Page(Page<Map<String, Object>> page, Map<String, Object> params);
+    IPage<Map<String, Object>> executeQuery_Page(Page<Map<String, Object>> page,@Param("params") Map<String, Object> params);
     /**
      * 新增类SQL
      * @param params

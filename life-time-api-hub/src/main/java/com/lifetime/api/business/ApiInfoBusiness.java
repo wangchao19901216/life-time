@@ -1,30 +1,27 @@
 package com.lifetime.api.business;
 
-import com.lifetime.api.entity.ApiBaseInfoEntity;
-import com.lifetime.api.entity.ApiGroupEntity;
-import com.lifetime.api.entity.ApiParamEntity;
-import com.lifetime.api.entity.ApiSqlInfoEntity;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.lifetime.api.entity.*;
+import com.lifetime.api.model.ApiCacheModel;
 import com.lifetime.api.model.ApiModel;
-import com.lifetime.api.service.IApiBaseInfoService;
-import com.lifetime.api.service.IApiGroupService;
-import com.lifetime.api.service.IApiParamService;
-import com.lifetime.api.service.IApiSqlInfoService;
-import com.lifetime.common.constant.Constants;
+import com.lifetime.api.service.*;
 import com.lifetime.common.constant.ResponseResultConstants;
-import com.lifetime.common.constant.StatusConstants;
+import com.lifetime.common.dataSource.service.IDataSourceService;
 import com.lifetime.common.enums.CommonExceptionEnum;
-import com.lifetime.common.model.TreeModel;
 import com.lifetime.common.response.ResponseResult;
 import com.lifetime.common.response.SearchRequest;
 import com.lifetime.common.response.SearchResponse;
 import com.lifetime.common.util.LtCommonUtil;
+import com.lifetime.common.util.LtModelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +41,13 @@ public class ApiInfoBusiness {
 
     @Autowired
     IApiParamService iApiParamService;
+    @Autowired
+    IAppService iAppService;
+    @Autowired
+    IDataSourceService iLtDataSourceService;
+    @Autowired
+    @Qualifier("apiCache")
+    Cache<String, Object> apiInfoCache;
 
     @Transactional
     public ResponseResult save(ApiModel model) {
@@ -78,7 +82,7 @@ public class ApiInfoBusiness {
 
     }
 
-
+    @Transactional
     public ResponseResult update(ApiModel mode) {
         try {
             iApiBaseInfoService.saveOrUpdate(mode.getApiBaseInfo());
@@ -96,8 +100,62 @@ public class ApiInfoBusiness {
             iApiParamService.saveOrUpdateBatch(list);
             return ResponseResult.success(ResponseResultConstants.SUCCESS);
         } catch (Exception exception) {
-            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED,exception.getMessage());
+            return ResponseResult.error(CommonExceptionEnum.DATA_UPDATE_FAILED, exception.getMessage());
         }
+    }
+
+    @Transactional
+    public ResponseResult publish(String apiCode) {
+        ApiBaseInfoEntity apiBaseInfo = iApiBaseInfoService.getByApiCode(apiCode);
+        apiBaseInfo.setIsPublish("1");
+        apiBaseInfo.setReleaseTime(new Date());
+        iApiBaseInfoService.updateById(apiBaseInfo);
+
+        // 更新缓存
+        Thread t = new Thread(() -> updateCache(apiCode));
+        t.start();
+        return ResponseResult.success(ResponseResultConstants.SUCCESS);
+    }
+
+    public ApiModel buildApiModel(String apiCode) {
+        ApiModel apiModel = new ApiModel();
+        ApiBaseInfoEntity apiBaseInfo = iApiBaseInfoService.getByApiCode(apiCode);
+        apiModel.setApiBaseInfo(apiBaseInfo);
+        ApiSqlInfoEntity apiSqlInfo = iApiSqlInfoService.getByApiCode(apiCode);
+        apiModel.setApiSqlInfo(apiSqlInfo);
+        List<ApiParamEntity> apiParamEntities = iApiParamService.getByApiCode(apiCode);
+        apiModel.setRequestParams(apiParamEntities.stream().filter(e -> e.getParamModel().equals("request")).collect(Collectors.toList()));
+        apiModel.setResponseParams(apiParamEntities.stream().filter(e -> e.getParamModel().equals("response")).collect(Collectors.toList()));
+        return apiModel;
+    }
+
+    public ApiCacheModel buildApiCacheModel(String apiCode) {
+        ApiCacheModel apiCacheModel = new ApiCacheModel();
+        apiCacheModel.setApiInfo(buildApiModel(apiCode));
+        apiCacheModel.setApps(iAppService.getByApiCode(apiCode));
+        return apiCacheModel;
+    }
+
+
+    public ApiCacheModel buildApiCacheModelByMethodAndUrl(String method, String url) {
+        ApiCacheModel apiCacheModel = new ApiCacheModel();
+        ApiBaseInfoEntity apiBaseInfo = iApiBaseInfoService.getByTypeAndMethodUrl(method, url);
+        if (LtCommonUtil.isNotBlankOrNull(apiBaseInfo)) {
+            apiCacheModel = buildApiCacheModel(apiBaseInfo.getApiCode());
+        }
+        return apiCacheModel;
+    }
+
+
+    public void updateCache(String apiCode) {
+        ApiCacheModel apiCacheModel = this.buildApiCacheModel(apiCode);
+        setCache(apiCacheModel);
+    }
+
+    public void setCache(ApiCacheModel apiCacheModel) {
+        String key = apiCacheModel.getApiInfo().getApiBaseInfo().getApiMethod() + "_" + apiCacheModel.getApiInfo().getApiBaseInfo().getApiUrl();
+        //key method+'_'+url
+        apiInfoCache.put(key, apiCacheModel);
     }
 
     public ResponseResult search(SearchRequest searchRequest) {
@@ -120,4 +178,9 @@ public class ApiInfoBusiness {
         response.results = list;
         return ResponseResult.success(response);
     }
+
+    public ResponseResult execute(String datasourceId, String datasourceType, String schema, String operateType, String sql, Map<String, Object> params) {
+        return ResponseResult.success(iLtDataSourceService.execute(datasourceId, datasourceType, schema, operateType, sql, params));
+    }
+
 }

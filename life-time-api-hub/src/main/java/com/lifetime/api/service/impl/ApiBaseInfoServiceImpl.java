@@ -41,4 +41,22 @@ public class ApiBaseInfoServiceImpl extends ServiceImpl<ApiBaseInfoMapper, ApiBa
     public boolean deleteByCode(String code) {
         return mapper.deleteByCode(code);
     }
+
+    @Override
+    public ApiBaseInfoEntity getByApiCode(String apiCode) {
+        LambdaQueryWrapper<ApiBaseInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ApiBaseInfoEntity::getApiCode, apiCode);
+        List<ApiBaseInfoEntity> list=mapper.selectList(queryWrapper);
+        return list.size()>0?list.get(0):null;
+    }
+
+    @Override
+    public ApiBaseInfoEntity getByTypeAndMethodUrl(String type, String methodUrl) {
+        LambdaQueryWrapper<ApiBaseInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ApiBaseInfoEntity::getApiMethod, type);
+        queryWrapper.eq(ApiBaseInfoEntity::getApiUrl, methodUrl);
+        List<ApiBaseInfoEntity> list=mapper.selectList(queryWrapper);
+        return list.size()>0?list.get(0):null;
+    }
+
 }
